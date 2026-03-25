@@ -31,7 +31,7 @@ templates = Jinja2Templates(directory="templates")
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "root",
+    "password": "PUC@1234",
     "database": "ClinicaSprint1"
 }
 
