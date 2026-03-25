@@ -10,7 +10,7 @@ Ver em: [python downloads](https://www.python.org/downloads/)
 ## Clonagem do projeto
 Selecione a pasta desejada no computador e execute o comando git clone abaixo:
 ```
-git clone https://gitlab.com/gilbriatore/2025/ec3/ex-clinica-py.git
+git clone https://gitlab.com/gilbriatore/2025/ec2/ex-clinica-py-s1.git
 ```
 ## Preparação do ambiente e execução do projeto
 
