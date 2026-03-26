@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from datetime import date, datetime
+from db import get_db
 
 app = FastAPI()
 
@@ -26,18 +27,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Configuração de templates Jinja2
 templates = Jinja2Templates(directory="templates")
-
-# Configuração do banco de dados
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "PUC@1234",
-    "database": "ClinicaSprint1"
-}
-
-# Função para obter conexão com MySQL
-def get_db():
-    return pymysql.connect(**DB_CONFIG)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
