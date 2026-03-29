@@ -4,7 +4,7 @@ import pymysql
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "PUC@1234",
+    "password": "",
     "database": "ClinicaSprint1"
 }
 # Função para obter conexão com MySQL
