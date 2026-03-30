@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Exemplo Clínica ABC Python
 
 
@@ -24,3 +25,6 @@ python -m venv .venv
 pip install --upgrade -r requirements.txt
 uvicorn main:app --reload
 ```
+=======
+# amnesia
+>>>>>>> e366ae8ec25f5ef6c674b834cba3287e28f1cc62
