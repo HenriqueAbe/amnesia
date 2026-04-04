@@ -16,22 +16,22 @@ function w3_show_none() {
 }
 
 function validaImagem(input) {
-  var caminho = input.value;
+    const caminho = input.value;
 
-  if (caminho) {
-      var comecoCaminho = (caminho.indexOf('\\') >= 0 ? caminho.lastIndexOf('\\') : caminho.lastIndexOf('/'));
-      var nomeArquivo = caminho.substring(comecoCaminho);
+    if (caminho) {
+      const comecoCaminho = (caminho.indexOf('\\') >= 0 ? caminho.lastIndexOf('\\') : caminho.lastIndexOf('/'));
+      let nomeArquivo = caminho.substring(comecoCaminho);
 
       if (nomeArquivo.indexOf('\\') === 0 || nomeArquivo.indexOf('/') === 0) {
           nomeArquivo = nomeArquivo.substring(1);
       }
 
-      var extensaoArquivo = nomeArquivo.indexOf('.') < 1 ? '' : nomeArquivo.split('.').pop();
+      const extensaoArquivo = nomeArquivo.indexOf('.') < 1 ? '' : nomeArquivo.split('.').pop();
 
-      if (extensaoArquivo != 'gif' &&
-          extensaoArquivo != 'png' &&
-          extensaoArquivo != 'jpg' &&
-          extensaoArquivo != 'jpeg') {
+      if (extensaoArquivo !== 'gif' &&
+          extensaoArquivo !== 'png' &&
+          extensaoArquivo !== 'jpg' &&
+          extensaoArquivo !== 'jpeg') {
           input.value = '';
           alert("É preciso selecionar um arquivo de imagem (gif, png, jpg ou jpeg)");
       }
@@ -40,9 +40,9 @@ function validaImagem(input) {
       alert("Selecione um caminho de arquivo válido");
   }
   if (input.files && input.files[0]) {
-      var arquivoTam = input.files[0].size / 1024 / 1024;
+      const arquivoTam = input.files[0].size / 1024 / 1024;
       if (arquivoTam < 16) {
-          var reader = new FileReader();
+          const reader = new FileReader();
           reader.onload = function(e) {
               document.getElementById('imagemSelecionada').setAttribute('src', e.target.result);
           };
@@ -58,9 +58,9 @@ function validaImagem(input) {
 
 // Script para mostrar ou ocultar senha
 function mostrarOcultarSenhaLogin() {
-  var senha  = document.getElementById("Senha");
+    const senha = document.getElementById("Senha");
 
-  if (senha.type == "password"){
+    if (senha.type === "password"){
     senha.type  = "text";
   } else {
     senha.type  = "password";
@@ -69,10 +69,10 @@ function mostrarOcultarSenhaLogin() {
 
 // Script para mostrar ou ocultar senha
 function mostrarOcultarSenhaCadastro() {
-  var senha1 = document.getElementById("Senha1");
-  var senha2 = document.getElementById("Senha2");
+    const senha1 = document.getElementById("Senha1");
+    const senha2 = document.getElementById("Senha2");
 
-  if (senha1.type == "password"){
+    if (senha1.type === "password"){
     senha1.type = "text";
     senha2.type = "text";
   } else {
@@ -83,10 +83,10 @@ function mostrarOcultarSenhaCadastro() {
 
 // Script para validar confirmação de senha Ok
 function validarSenha() {
-  var senha  = document.getElementById("Senha1");
-  var senha2 = document.getElementById("Senha2");
+    const senha = document.getElementById("Senha1");
+    const senha2 = document.getElementById("Senha2");
 
-  if (senha.value != senha2.value) {
+    if (senha.value !== senha2.value) {
     senha2.setCustomValidity("Senhas diferentes!");
     senha2.reportValidity();
     return false;
@@ -99,8 +99,8 @@ function validarSenha() {
 // Script para preenchimento de número de celular
 function mask(o, f) {
   setTimeout(function() {
-    var v = mphone(o.value);
-    if (v != o.value) {
+      const v = mphone(o.value);
+      if (v !== o.value) {
       o.value = v;
     }
   }, 1);
@@ -108,8 +108,8 @@ function mask(o, f) {
 
 
 function mphone(v) {
-  var r = v.replace(/\D/g, "");
-  r = r.replace(/^0/, "");
+    let r = v.replace(/\D/g, "");
+    r = r.replace(/^0/, "");
   if (r.length > 10) {
     r = r.replace(/^(\d\d)(\d{5})(\d{4}).*/, "($1)$2-$3");
   } else if (r.length > 5) {
