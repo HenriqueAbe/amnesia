@@ -262,6 +262,25 @@ body {
 .btn:hover { background: var(--focus); }
 .btn:active { transform: scale(.98); }
 
+/* Container do botão para criar o respiro */
+.area-botao {
+    margin-top: 30px; /* Aumenta a distância do formulário */
+    padding-top: 20px;
+    border-top: 1px solid var(--border); /* Uma linha sutil para separar */
+}
+
+/* Se você quiser que o painel use o espaço disponível para empurrar o botão para baixo */
+.panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.area-botao {
+    margin-top: auto; /* Empurra o botão para o final do painel */
+    padding-bottom: 10px;
+}
+
 /* ── Mobile ── */
 @media (max-width: 620px) {
   html, body { overflow: hidden; height: 100%; }
@@ -282,3 +301,4 @@ body {
   .field input { background: rgba(27,30,43,.7); }
   .hints span { background: rgba(27,30,43,.7); }
 }
+

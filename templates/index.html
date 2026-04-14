@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Amnesia — Cinema</title>
-   <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}"/>
-   <link rel="stylesheet" href="../../static/css/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}"/>
+  <link rel="stylesheet" href="../../static/css/style.css">
+
 </head>
 <body>
 
 <div class="wrap">
-
   <div class="left">
     <img src="../../static/imagens/amnesiaphoto.png" alt="Cinema">
     <div class="overlay"></div>
@@ -29,7 +29,6 @@
     <div class="slider-wrap">
       <div class="track" id="track">
 
-        <!-- LOGIN -->
         <div class="panel">
           <h1>Acesse sua conta</h1>
           <p class="global-err" id="err-global"></p>
@@ -52,7 +51,6 @@
           <button class="btn" onclick="doLogin()">Entrar</button>
         </div>
 
-        <!-- CADASTRO -->
         <div class="panel">
           <h1>Crie sua conta</h1>
 
@@ -68,15 +66,15 @@
             <p class="err" id="e-ce"></p>
           </div>
 
+          <div class="field" id="f-cd">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <input type="text" id="c-data_de_nascimento" placeholder="Data de nascimento (DD/MM/AAAA)" maxlength="10" oninput="valDatadeNascimento()">
+            <p class="err" id="e-cd"></p>
+          </div>
+
           <div class="field" id="f-cs">
             <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            
-            <input type="password" 
-            id="c-senha" 
-            placeholder="Senha" 
-            autocomplete="new-password" 
-            oninput="valSenha()">
-
+            <input type="password" id="c-senha" placeholder="Senha" autocomplete="new-password" oninput="valSenha()">
             <button class="eye" type="button" onclick="togglePw('c-senha',this)">
               <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -107,8 +105,7 @@
   </div>
 </div>
 
-
-  <script src="../../static/js/app.js"></script>
-  <script type="text/javascript" src="{{ url_for('static', path='js/app.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', path='js/app.js') }}"></script>
+<script src="../../static/js/app.js"></script>
 </body>
 </html>
