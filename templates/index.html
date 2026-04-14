@@ -1,111 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amnesia — Cinema</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}"/>
-  <link rel="stylesheet" href="../../static/css/style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploração - Seu Site</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div class="wrap">
-  <div class="left">
-    <img src="../../static/imagens/amnesiaphoto.png" alt="Cinema">
-    <div class="overlay"></div>
-    <div class="left-info">
-      <span class="tag">Amnesia</span>
-      <p>O guia definitivo para os amantes do cinema</p>
+    <div class="container">
+        <img src="../static/images/exploracao.svg" alt="Exploração">
     </div>
-  </div>
-
-  <div class="right">
-    <div class="tabs">
-      <button class="tab active" id="tab-login" onclick="switchTab('login')">Login</button>
-      <button class="tab" id="tab-cad" onclick="switchTab('cad')">Cadastro</button>
-    </div>
-
-    <div class="slider-wrap">
-      <div class="track" id="track">
-
-        <div class="panel">
-          <h1>Acesse sua conta</h1>
-          <p class="global-err" id="err-global"></p>
-
-          <div class="field" id="f-le">
-            <svg class="ico" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
-            <input type="email" id="l-email" placeholder="E-mail" autocomplete="email" oninput="clearGlobal()">
-            <p class="err" id="e-le"></p>
-          </div>
-
-          <div class="field" id="f-ls">
-            <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input type="password" id="l-senha" placeholder="Senha" autocomplete="current-password" oninput="clearGlobal()">
-            <button class="eye" type="button" onclick="togglePw('l-senha',this)">
-              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-            <p class="err" id="e-ls"></p>
-          </div>
-
-          <button class="btn" onclick="doLogin()">Entrar</button>
-        </div>
-
-        <div class="panel">
-          <h1>Crie sua conta</h1>
-
-          <div class="field" id="f-cn">
-            <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-            <input type="text" id="c-nome" placeholder="Nome" autocomplete="name" oninput="clrF('f-cn','e-cn')">
-            <p class="err" id="e-cn"></p>
-          </div>
-
-          <div class="field" id="f-ce">
-            <svg class="ico" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
-            <input type="email" id="c-email" placeholder="E-mail" autocomplete="email" oninput="valEmail()">
-            <p class="err" id="e-ce"></p>
-          </div>
-
-          <div class="field" id="f-cd">
-            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            <input type="text" id="c-data_de_nascimento" placeholder="Data de nascimento (DD/MM/AAAA)" maxlength="10" oninput="valDatadeNascimento()">
-            <p class="err" id="e-cd"></p>
-          </div>
-
-          <div class="field" id="f-cs">
-            <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input type="password" id="c-senha" placeholder="Senha" autocomplete="new-password" oninput="valSenha()">
-            <button class="eye" type="button" onclick="togglePw('c-senha',this)">
-              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-            <p class="err" id="e-cs"></p>
-          </div>
-
-          <div class="hints" id="hints">
-            <span id="h-len">8 caracteres</span>
-            <span id="h-num">1 número</span>
-            <span id="h-let">1 letra</span>
-            <span id="h-sym">1 símbolo</span>
-          </div>
-
-          <div class="field" id="f-cc">
-            <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input type="password" id="c-conf" placeholder="Confirme a senha" autocomplete="new-password" oninput="valConf()">
-            <button class="eye" type="button" onclick="togglePw('c-conf',this)">
-              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-            <p class="err" id="e-cc"></p>
-          </div>
-
-          <button class="btn" onclick="doCadastro()">Criar conta</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-<script type="text/javascript" src="{{ url_for('static', path='js/app.js') }}"></script>
-<script src="../../static/js/app.js"></script>
 </body>
-</html>

@@ -15,8 +15,8 @@ app = FastAPI()
 # Configuração de sessão
 app.add_middleware(
     SessionMiddleware,
-    secret_key="clinica",
-    session_cookie="clinica_session",
+    secret_key="amnesia",
+    session_cookie="amnesia_session",
     max_age=50000,
     same_site="lax",
     https_only=False
@@ -31,7 +31,9 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return RedirectResponse(url="/medListar", status_code=303)
+    return templates.TemplateResponse("loginecadastro.html", {
+        "request": request
+    })
 
 
 @app.get("/medListar", name="medListar", response_class=HTMLResponse)
