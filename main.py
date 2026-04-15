@@ -1,189 +1,355 @@
 import pymysql
-import base64
+from datetime import datetime
 
-from mangum import Mangum
-from fastapi import FastAPI, Request, Form, Depends, UploadFile, File
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-from datetime import date, datetime
+
 from db import get_db
 
-app = FastAPI()
+#Setup
+app = FastAPI(title="Amnesia – Cinema")
 
-# Configuração de sessão
 app.add_middleware(
     SessionMiddleware,
-    secret_key="amnesia",
+    secret_key="", #devemos adicionar uma secret key
     session_cookie="amnesia_session",
-    max_age=50000,
+    max_age=50_000,
     same_site="lax",
     https_only=False
 )
 
-# Configuração de arquivos estáticos
+# arquivos e templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Configuração de templates Jinja2
 templates = Jinja2Templates(directory="templates")
 
 
+#helpers
+def get_current_user(request: Request) -> dict | None:
+    """Return the session user dict, or None if not logged in."""
+    return request.session.get("user")
+
+
+def redirect_to_login(message: str = "") -> RedirectResponse:
+    """Shortcut: redirect to '/' (login page)."""
+    response = RedirectResponse(url="/", status_code=303)
+    return response
+
+
+#rotas publicas
+
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
+async def login_page(request: Request):
+    """
+    Serve the login / registration page.
+    If the user is already authenticated, send them straight to /filmes.
+    """
+    if get_current_user(request):
+        return RedirectResponse(url="/filmes", status_code=303)
+
     return templates.TemplateResponse("loginecadastro.html", {
-        "request": request
-    })
-
-
-@app.get("/medListar", name="medListar", response_class=HTMLResponse)
-async def listar_medicos(request: Request, db=Depends(get_db)):
-    with db.cursor(pymysql.cursors.DictCursor) as cursor:
-        sql = """
-              SELECT M.ID_Medico, \
-                     M.CRM, \
-                     M.Nome, \
-                     E.Nome_Espec AS Especialidade,
-                     M.Foto, \
-                     M.Dt_Nasc
-              FROM Medico AS M
-                       JOIN Especialidade AS E ON M.fk_ID_Espec = E.ID_Espec
-              ORDER BY M.Nome; \
-              """
-        cursor.execute(sql)
-        medicos = cursor.fetchall()
-
-    hoje = date.today()
-    for med in medicos:
-        dt_nasc = med["Dt_Nasc"]
-        if isinstance(dt_nasc, str):
-            ano, mes, dia = map(int, dt_nasc.split("-"))
-            dt_nasc = date(ano, mes, dia)
-
-        idade = hoje.year - dt_nasc.year
-        if (dt_nasc.month, dt_nasc.day) > (hoje.month, hoje.day):
-            idade -= 1
-        med["idade"] = idade
-
-        if med["Foto"]:
-            med["Foto_base64"] = base64.b64encode(med["Foto"]).decode('utf-8')
-        else:
-            med["Foto_base64"] = None
-
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-    return templates.TemplateResponse("medListar.html", {
         "request": request,
-        "medicos": medicos,
-        "hoje": agora
+        "erro_login": request.session.pop("erro_login", None),
+        "erro_cadastro": request.session.pop("erro_cadastro", None),
+        "sucesso_cadastro": request.session.pop("sucesso_cadastro", None),
     })
 
 
-# CORREÇÃO: Adicionado name="medIncluir" para o url_for funcionar
-@app.get("/medIncluir", name="medIncluir", response_class=HTMLResponse)
-async def med_incluir(request: Request, db=Depends(get_db)):
-    with db.cursor(pymysql.cursors.DictCursor) as cursor:
-        cursor.execute("SELECT ID_Espec, Nome_Espec FROM Especialidade")
-        especialidades = cursor.fetchall()
-    db.close()
+#autentica'cao e registro
 
-    nome_usuario = request.session.get("nome_usuario", None)
-    perfil = request.session.get("perfil", None)
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    return templates.TemplateResponse("medIncluir.html", {
-        "request": request,
-        "especialidades": especialidades,
-        "hoje": agora,
-        "nome_usuario": nome_usuario,
-        "perfil": perfil
-    })
-
-
-@app.post("/medIncluir_exe", name="medIncluir_exe")
-async def med_incluir_exe(
-        request: Request,
-        Nome: str = Form(...),
-        CRM: str = Form(...),
-        Especialidade: str = Form(...),
-        DataNasc: str = Form(None),
-        Imagem: UploadFile = File(None),
-        db=Depends(get_db)
+@app.post("/cadastro", name="cadastro")
+async def cadastro(
+    request: Request,
+    nome_usuario: str = Form(...),
+    email:        str = Form(...),
+    senha:        str = Form(...),
+    db=Depends(get_db),
 ):
-    foto_bytes = None
-    if Imagem and Imagem.filename:
-        foto_bytes = await Imagem.read()
+    """
+    Handle new-user registration.
+
+    Business rules (from project spec):
+      - Nome_Usuario and Email must be unique (enforced by DB UNIQUE constraint).
+      - Passwords are stored as plain text here; swap `senha` for
+        `bcrypt.hash(senha)` when you add password hashing.
+    """
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(
+                "SELECT ID FROM Perfil WHERE Email = %s OR Nome_Usuario = %s",
+                (email, nome_usuario),
+            )
+            existing = cursor.fetchone()
+
+            if existing:
+                request.session["erro_cadastro"] = (
+                    "E-mail ou nome de usuário já cadastrado."
+                )
+                return RedirectResponse(url="/?tab=cad", status_code=303)
+
+            # insert de ovo usuario
+            # TODO: hash the password before storing, e.g.:
+            #   from passlib.hash import bcrypt
+            #   senha_hash = bcrypt.hash(senha)
+            cursor.execute(
+                """
+                INSERT INTO Perfil (Nome_Usuario, Email, Senha, Tipo)
+                VALUES (%s, %s, %s, 'USER')
+                """,
+                (nome_usuario, email, senha),
+            )
+            db.commit()
+
+        request.session["sucesso_cadastro"] = (
+            "Conta criada com sucesso! Faça login para continuar."
+        )
+        return RedirectResponse(url="/", status_code=303)
+
+    except Exception as e:
+        db.rollback()
+        request.session["erro_cadastro"] = f"Erro ao cadastrar: {str(e)}"
+        return RedirectResponse(url="/?tab=cad", status_code=303)
+
+    finally:
+        db.close()
+
+
+#login auth
+
+@app.post("/login", name="login")
+async def login(
+    request: Request,
+    email: str = Form(...),
+    senha: str = Form(...),
+    db=Depends(get_db),
+):
+    """
+    Verify credentials and create the user session.
+
+    The session stores a lightweight dict with the user's ID, username,
+    and role so that every protected route can read it without hitting
+    the DB again.
+    """
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(
+                "SELECT ID, Nome_Usuario, Email, Senha, Tipo FROM Perfil WHERE Email = %s",
+                (email,),
+            )
+            user = cursor.fetchone()
+
+        #checagem cred
+        # TODO: replace the plain-text comparison below with:
+        #   bcrypt.verify(senha, user["Senha"])
+        if not user or user["Senha"] != senha:
+            request.session["erro_login"] = "E-mail ou senha incorretos."
+            return RedirectResponse(url="/", status_code=303)
+
+        # populando
+        request.session["user"] = {
+            "id":           user["ID"],
+            "nome_usuario": user["Nome_Usuario"],
+            "email":        user["Email"],
+            "tipo":         user["Tipo"],   # 'USER' or 'ADMIN'
+        }
+
+        return RedirectResponse(url="/filmes", status_code=303)
+
+    except Exception as e:
+        request.session["erro_login"] = f"Erro interno: {str(e)}"
+        return RedirectResponse(url="/", status_code=303)
+
+    finally:
+        db.close()
+
+
+#logout
+
+@app.get("/logout", name="logout")
+async def logout(request: Request):
+    """Clear the session and redirect to the login page."""
+    request.session.clear()
+    return RedirectResponse(url="/", status_code=303)
+
+
+#rotas protegidas
+@app.get("/filmes", name="filmes", response_class=HTMLResponse)
+async def listar_filmes(request: Request, db=Depends(get_db)):
+    """
+    Main movie listing page — requires authentication.
+
+    Fetches all films with their director and average rating.
+    """
+    # --- Auth guard -------------------------------------------------------
+    user = get_current_user(request)
+    if not user:
+        request.session["erro_login"] = "Faça login para acessar."
+        return RedirectResponse(url="/", status_code=303)
+
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(
+                """
+                SELECT
+                    f.ID,
+                    f.Titulo,
+                    f.Sinopse,
+                    f.Ano_Lancamento,
+                    f.Classificacao,
+                    f.Capa_URL,
+                    d.Nome        AS Diretor,
+                    ROUND(AVG(a.Nota), 1) AS Nota_Media,
+                    COUNT(a.ID)   AS Total_Avaliacoes
+                FROM Filme f
+                LEFT JOIN Diretor   d ON f.Diretor_ID = d.ID
+                LEFT JOIN Avaliacao a ON f.ID = a.Filme_ID
+                GROUP BY f.ID
+                ORDER BY f.Titulo
+                """
+            )
+            filmes = cursor.fetchall()
+
+    finally:
+        db.close()
+
+    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    return templates.TemplateResponse("filmes.html", {
+        "request": request,
+        "user":    user,
+        "filmes":  filmes,
+        "hoje":    agora,
+    })
+
+
+@app.get("/filmes/{filme_id}", name="detalhe_filme", response_class=HTMLResponse)
+async def detalhe_filme(request: Request, filme_id: int, db=Depends(get_db)):
+    """
+    Movie detail page — requires authentication.
+
+    Fetches the film, its genres, cast, and all reviews.
+    """
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/", status_code=303)
+
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+
+            # avalia'cao
+            cursor.execute(
+                """
+                SELECT
+                    f.*,
+                    d.Nome AS Diretor,
+                    ROUND(AVG(a.Nota), 1) AS Nota_Media
+                FROM Filme f
+                LEFT JOIN Diretor   d ON f.Diretor_ID = d.ID
+                LEFT JOIN Avaliacao a ON f.ID = a.Filme_ID
+                WHERE f.ID = %s
+                GROUP BY f.ID
+                """,
+                (filme_id,),
+            )
+            filme = cursor.fetchone()
+
+            if not filme:
+                return RedirectResponse(url="/filmes", status_code=303)
+
+            # Genres
+            cursor.execute(
+                """
+                SELECT g.Nome FROM Genero g
+                JOIN Filme_Genero fg ON g.ID = fg.Genero_ID
+                WHERE fg.Filme_ID = %s
+                """,
+                (filme_id,),
+            )
+            generos = [row["Nome"] for row in cursor.fetchall()]
+
+            # Cast
+            cursor.execute(
+                """
+                SELECT aa.Nome FROM Ator_Atriz aa
+                JOIN Filme_Ator fa ON aa.ID = fa.Ator_ID
+                WHERE fa.Filme_ID = %s
+                """,
+                (filme_id,),
+            )
+            atores = [row["Nome"] for row in cursor.fetchall()]
+
+            # Reviews
+            cursor.execute(
+                """
+                SELECT
+                    p.Nome_Usuario,
+                    a.Nota,
+                    a.Comentario,
+                    DATE_FORMAT(a.Data_Avaliacao, '%%d/%%m/%%Y') AS Data
+                FROM Avaliacao a
+                JOIN Perfil p ON a.Perfil_ID = p.ID
+                WHERE a.Filme_ID = %s
+                ORDER BY a.Data_Avaliacao DESC
+                """,
+                (filme_id,),
+            )
+            avaliacoes = cursor.fetchall()
+
+    finally:
+        db.close()
+
+    return templates.TemplateResponse("filme_detalhe.html", {
+        "request":   request,
+        "user":      user,
+        "filme":     filme,
+        "generos":   generos,
+        "atores":    atores,
+        "avaliacoes": avaliacoes,
+    })
+
+
+#reviews
+
+@app.post("/avaliar/{filme_id}", name="avaliar_filme")
+async def avaliar_filme(
+    request:   Request,
+    filme_id:  int,
+    nota:      float = Form(...),
+    comentario: str  = Form(""),
+    db=Depends(get_db),
+):
+    """
+    Submit or update a review for a film.
+
+    The DB enforces UNIQUE (Filme_ID, Perfil_ID), so duplicate reviews
+    are rejected at the constraint level.
+    """
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/", status_code=303)
 
     try:
         with db.cursor() as cursor:
-            sql = """INSERT INTO Medico (Nome, CRM, fk_ID_Espec, Dt_Nasc, Foto)
-                     VALUES (%s, %s, %s, %s, %s)"""
-            cursor.execute(sql, (Nome, CRM, Especialidade, DataNasc, foto_bytes))
+            cursor.execute(
+                """
+                INSERT INTO Avaliacao (Filme_ID, Perfil_ID, Nota, Comentario)
+                VALUES (%s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                    Nota = VALUES(Nota),
+                    Comentario = VALUES(Comentario),
+                    Data_Avaliacao = CURRENT_TIMESTAMP
+                """,
+                (filme_id, user["id"], nota, comentario),
+            )
             db.commit()
 
-        request.session["mensagem_header"] = "Inclusão de Novo Médico"
-        request.session["mensagem"] = "Registro cadastrado com sucesso!"
     except Exception as e:
-        request.session["mensagem_header"] = "Erro ao cadastrar"
-        request.session["mensagem"] = str(e)
+        db.rollback()
+        print(f"[AVALIAÇÃO] Erro: {e}")
+
     finally:
         db.close()
 
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-    return templates.TemplateResponse("medIncluir_exe.html", {
-        "request": request,
-        "mensagem_header": request.session.get("mensagem_header", ""),
-        "mensagem": request.session.get("mensagem", ""),
-        "hoje": agora
-    })
-
-
-@app.get("/medExcluir", name="medExcluir", response_class=HTMLResponse)
-async def med_excluir(request: Request, id: int, db=Depends(get_db)):
-    with db.cursor(pymysql.cursors.DictCursor) as cursor:
-        sql = ("SELECT M.ID_Medico, M.Nome, M.CRM, M.Dt_Nasc, E.Nome_Espec "
-               "FROM Medico M JOIN Especialidade E ON M.fk_ID_Espec = E.ID_Espec "
-               "WHERE M.ID_Medico = %s")
-        cursor.execute(sql, (id,))
-        medico = cursor.fetchone()
-    db.close()
-
-    data_nasc = medico["Dt_Nasc"]
-    if isinstance(data_nasc, str):
-        ano, mes, dia = data_nasc.split("-")
-    else:
-        ano, mes, dia = data_nasc.year, f"{data_nasc.month:02d}", f"{data_nasc.day:02d}"
-    data_formatada = f"{dia}/{mes}/{ano}"
-
-    hoje = datetime.now().strftime("%d/%m/%Y %H:%M")
-
-    return templates.TemplateResponse("medExcluir.html", {
-        "request": request,
-        "med": medico,
-        "data_formatada": data_formatada,
-        "hoje": hoje
-    })
-
-
-@app.post("/medExcluir_exe", name="medExcluir_exe")
-async def med_excluir_exe(request: Request, id: int = Form(...), db=Depends(get_db)):
-    try:
-        with db.cursor(pymysql.cursors.DictCursor) as cursor:
-            sql_delete = "DELETE FROM Medico WHERE ID_Medico = %s"
-            cursor.execute(sql_delete, (id,))
-            db.commit()
-
-            request.session["mensagem_header"] = "Exclusão de Médico"
-            request.session["mensagem"] = f"Médico excluído com sucesso."
-    except Exception as e:
-        request.session["mensagem_header"] = "Erro ao excluir"
-        request.session["mensagem"] = str(e)
-    finally:
-        db.close()
-
-    return templates.TemplateResponse("medExcluir_exe.html", {
-        "request": request,
-        "mensagem_header": request.session.get("mensagem_header", ""),
-        "mensagem": request.session.get("mensagem", ""),
-        "hoje": datetime.now().strftime("%d/%m/%Y %H:%M")
-    })
+    return RedirectResponse(url=f"/filmes/{filme_id}", status_code=303)
