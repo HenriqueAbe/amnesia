@@ -8,7 +8,8 @@ CREATE TABLE Perfil (
     Email VARCHAR(100) UNIQUE NOT NULL,
     Senha VARCHAR(255) NOT NULL,
     Tipo ENUM('USER', 'ADMIN') DEFAULT 'USER',
-    Data_Cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+    Data_Cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
+	CAPA_Usuario VARCHAR(2083)
 );
 
 CREATE TABLE Diretor (
@@ -38,10 +39,9 @@ CREATE TABLE Filme (
     Sinopse TEXT,
     Ano_Lancamento INT,
     Classificacao VARCHAR(10),
-    Capa_URL VARCHAR(255),
     Diretor_ID INT,
-    AdicionadoPor_ID INT, 
-    
+    AdicionadoPor_ID INT,
+	CAPA_URL VARCHAR(2083),
     FOREIGN KEY (Diretor_ID) REFERENCES Diretor(ID) ON DELETE SET NULL,
     FOREIGN KEY (AdicionadoPor_ID) REFERENCES Perfil(ID) ON DELETE SET NULL
 );
@@ -70,35 +70,33 @@ CREATE TABLE Avaliacao (
     Nota DECIMAL(2,1) NOT NULL,
     Comentario TEXT,
     Data_Avaliacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-    
     UNIQUE (Filme_ID, Perfil_ID), 
-    
     FOREIGN KEY (Filme_ID) REFERENCES Filme(ID) ON DELETE CASCADE,
     FOREIGN KEY (Perfil_ID) REFERENCES Perfil(ID) ON DELETE CASCADE
 );
 
 
-INSERT INTO Perfil (Nome_Usuario, Email, Senha, Tipo) VALUES
-('admin_geral', 'admin@cinema.com', 'pwd123', 'ADMIN'),
-('felipe_urbanek', 'felipe@empresa.com', 'pwd123', 'ADMIN'), 
-('joao_cine', 'joao@gmail.com', 'pwd123', 'USER'),
-('maria_pipoca', 'maria@hotmail.com', 'pwd123', 'USER'),
-('carlos_filmes', 'carlos@yahoo.com', 'pwd123', 'USER'),
-('ana_critica', 'ana@outlook.com', 'pwd123', 'USER'),
-('pedro_maratona', 'pedro@gmail.com', 'pwd123', 'USER'),
-('lucas_vlog', 'lucas@gmail.com', 'pwd123', 'USER'),
-('bia_cinema', 'bia@hotmail.com', 'pwd123', 'USER'),
-('fernando_geek', 'fernando@yahoo.com', 'pwd123', 'USER'),
-('camila_tela', 'camila@gmail.com', 'pwd123', 'USER'),
-('roberto_retrô', 'roberto@outlook.com', 'pwd123', 'USER'),
-('juliana_star', 'juliana@gmail.com', 'pwd123', 'USER'),
-('thiago_dev', 'thiago@empresa.com', 'pwd123', 'USER'),
-('victor_eba', 'victor@empresa.com', 'pwd123', 'USER'),
-('marco_bot', 'marco@empresa.com', 'pwd123', 'USER'),
-('jeferson_rpa', 'jeferson@empresa.com', 'pwd123', 'USER'),
-('davi_docs', 'davi@empresa.com', 'pwd123', 'USER'),
-('rafael_luz', 'rafael@gmail.com', 'pwd123', 'USER'),
-('amanda_cine', 'amanda@hotmail.com', 'pwd123', 'USER');
+INSERT INTO Perfil (Nome_Usuario, Email, Senha, Tipo, CAPA_Usuario) VALUES
+('admin_geral', 'admin@cinema.com', 'pwd123', 'ADMIN',''),
+('felipe_urbanek', 'felipe@empresa.com', 'pwd123', 'ADMIN',''), 
+('joao_cine', 'joao@gmail.com', 'pwd123', 'USER',''),
+('maria_pipoca', 'maria@hotmail.com', 'pwd123', 'USER',''),
+('carlos_filmes', 'carlos@yahoo.com', 'pwd123', 'USER',''),
+('ana_critica', 'ana@outlook.com', 'pwd123', 'USER',''),
+('pedro_maratona', 'pedro@gmail.com', 'pwd123', 'USER',''),
+('lucas_vlog', 'lucas@gmail.com', 'pwd123', 'USER',''),
+('bia_cinema', 'bia@hotmail.com', 'pwd123', 'USER',''),
+('fernando_geek', 'fernando@yahoo.com', 'pwd123', 'USER',''),
+('camila_tela', 'camila@gmail.com', 'pwd123', 'USER',''),
+('roberto_retrô', 'roberto@outlook.com', 'pwd123', 'USER',''),
+('juliana_star', 'juliana@gmail.com', 'pwd123', 'USER',''),
+('thiago_dev', 'thiago@empresa.com', 'pwd123', 'USER',''),
+('victor_eba', 'victor@empresa.com', 'pwd123', 'USER',''),
+('marco_bot', 'marco@empresa.com', 'pwd123', 'USER',''),
+('jeferson_rpa', 'jeferson@empresa.com', 'pwd123', 'USER',''),
+('davi_docs', 'davi@empresa.com', 'pwd123', 'USER',''),
+('rafael_luz', 'rafael@gmail.com', 'pwd123', 'USER',''),
+('amanda_cine', 'amanda@hotmail.com', 'pwd123', 'USER','');
 
 
 INSERT INTO Diretor (Nome, Data_Nascimento, Nacionalidade) VALUES
@@ -127,17 +125,17 @@ INSERT INTO Genero (Nome) VALUES
 ('Ação'), ('Ficção Científica'), ('Drama'), ('Aventura'), 
 ('Suspense'), ('Crime'), ('Fantasia'), ('Terror');
 
-INSERT INTO Filme (Titulo, Sinopse, Ano_Lancamento, Classificacao, Diretor_ID, AdicionadoPor_ID) VALUES
-('Matrix', 'Realidade simulada e rebelião humana.', 1999, '14', 1, 2),
-('Interestelar', 'Exploração espacial e relatividade.', 2014, '10', 2, 2),
-('O Poderoso Chefão', 'Drama épico sobre a máfia.', 1972, '16', 3, 1),
-('A Origem', 'Invasão de sonhos e subconsciente.', 2010, '14', 2, 2),
-('Clube da Luta', 'Insônia, anarquia e um clube secreto.', 1999, '18', 4, 2),
-('Pulp Fiction', 'Crime e violência em Los Angeles.', 1994, '18', 5, 1),
-('Cidade de Deus', 'Violência urbana nas favelas brasileiras.', 2002, '16', 6, 2),
-('Parasita', 'Conflito de classes e suspense coreano.', 2019, '16', 7, 1),
-('O Irlandês', 'História de um assassino da máfia.', 2019, '16', 8, 1),
-('Batman: O Cavaleiro das Trevas', 'O embate entre Batman e o Coringa.', 2008, '12', 2, 2);
+INSERT INTO Filme (Titulo, Sinopse, Ano_Lancamento, Classificacao, Capa_URL, Diretor_ID, AdicionadoPor_ID) VALUES
+('Matrix', 'Realidade simulada e rebelião humana.', 1999, '14', 'https://image.tmdb.org/t/p/w500/aOIuZAjPaRIE6CMzbazvcHuHXDc.jpg', 1, 2),
+('Interestelar', 'Exploração espacial e relatividade.', 2014, '10', 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg', 2, 2),
+('O Poderoso Chefão', 'Drama épico sobre a máfia.', 1972, '16', 'https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg', 3, 1),
+('A Origem', 'Invasão de sonhos e subconsciente.', 2010, '14', 'https://image.tmdb.org/t/p/w500/qmDpIHrmpJINaRKAfWQfftjCdyi.jpg', 2, 2),
+('Clube da Luta', 'Insônia, anarquia e um clube secreto.', 1999, '18', 'https://image.tmdb.org/t/p/w500/bptfVGEQuv6vDTIMVCHjJ9Dz8PX.jpg', 4, 2),
+('Pulp Fiction', 'Crime e violência em Los Angeles.', 1994, '18', 'https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg', 5, 1),
+('Cidade de Deus', 'Violência urbana nas favelas brasileiras.', 2002, '16', 'https://image.tmdb.org/t/p/w500/4hO8Fh0rHkzK6v2GdP7p0sJY9zc.jpg', 6, 2),
+('Parasita', 'Conflito de classes e suspense coreano.', 2019, '16', 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', 7, 1),
+('O Irlandês', 'História de um assassino da máfia.', 2019, '16', 'https://image.tmdb.org/t/p/w500/mbm8k3GFhXS0ROd9AD1gqYbIFbM.jpg', 8, 1),
+('Batman: O Cavaleiro das Trevas', 'O embate entre Batman e o Coringa.', 2008, '12', 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 2, 2);
 
 INSERT INTO Filme_Ator (Filme_ID, Ator_ID) VALUES
 (1, 1), (2, 2), (3, 7), (4, 3), (5, 4), (6, 7), (7, 5), (8, 6), (9, 7), (10, 10);
