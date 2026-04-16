@@ -133,7 +133,10 @@ function doLogin() {
 
     if (!senha) { setErr('f-ls','e-ls','Informe a senha'); ok = false; }
 
-    if (ok) $('err-global').textContent = 'Senha ou usuário incorreto';
+    // SE TUDO ESTIVER OK NO FRONT-END, ENVIA PARA O BACK-END (FASTAPI)
+    if (ok) {
+        $('form-login').submit();
+    }
 }
 
 /* cadastro */
@@ -160,29 +163,32 @@ function doCadastro() {
     }
 
     if (!dataNasc) {
-    setErr('f-cd', 'e-cd', 'Informe sua data de nascimento');
-    ok = false;
-} else if (!DATE_RE.test(dataNasc)) {
-    setErr('f-cd', 'e-cd', 'Formato inválido (DD/MM/AAAA)');
-    ok = false;
-} else {
-    // Verificação extra de 18 anos no clique do botão
-    const [d, m, a] = dataNasc.split('/').map(Number);
-    const nasc = new Date(a, m - 1, d);
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - nasc.getFullYear();
-    if (hoje.getMonth() < m-1 || (hoje.getMonth() === m-1 && hoje.getDate() < d)) idade--;
-    
-    if (idade < 18) {
-        setErr('f-cd', 'e-cd', 'Menores de 18 anos não são permitidos');
+        setErr('f-cd', 'e-cd', 'Informe sua data de nascimento');
         ok = false;
+    } else if (!DATE_RE.test(dataNasc)) {
+        setErr('f-cd', 'e-cd', 'Formato inválido (DD/MM/AAAA)');
+        ok = false;
+    } else {
+        // Verificação extra de 18 anos no clique do botão
+        const [d, m, a] = dataNasc.split('/').map(Number);
+        const nasc = new Date(a, m - 1, d);
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - nasc.getFullYear();
+        if (hoje.getMonth() < m-1 || (hoje.getMonth() === m-1 && hoje.getDate() < d)) idade--;
+
+        if (idade < 18) {
+            setErr('f-cd', 'e-cd', 'Menores de 18 anos não são permitidos');
+            ok = false;
+        }
     }
-}
 
     if (!conf) { setErr('f-cc','e-cc','Confirme sua senha'); ok = false; }
     else if (senha !== conf) { setErr('f-cc','e-cc','As senhas não coincidem'); ok = false; }
 
-    if (ok) alert('Conta criada com sucesso! 🎬');
+    // SE TUDO ESTIVER OK NO FRONT-END, ENVIA PARA O BACK-END (FASTAPI)
+    if (ok) {
+        $('form-cadastro').submit();
+    }
 }
 
 function checarFormulario() {
