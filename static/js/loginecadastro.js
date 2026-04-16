@@ -235,9 +235,7 @@ function doCadastro() {
     // SE TUDO ESTIVER OK NO FRONT-END, ENVIA PARA O BACK-END (FASTAPI)
     if (ok) {
         $('form-cadastro').submit(); // Aqui ele envia para o FastAPI
-    } else {
-        console.log("Cadastro interrompido: existem erros no formulário.");
-    }
+    } 
 }
 
 function checarFormulario() {
