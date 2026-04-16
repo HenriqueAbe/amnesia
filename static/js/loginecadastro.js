@@ -60,12 +60,22 @@ function valDatadeNascimento(event) {
     }
     input.value = v;
 
-    // Se a data estiver completa (10 caracteres), validamos a idade
+    // Se a data estiver completa (10 caracteres), validamos a fundo
     if (v.length === 10) {
         const [dia, mes, ano] = v.split('/').map(Number);
+        
+        // Criamos o objeto Date (Mês no JS começa em 0, por isso mes - 1)
         const dataNasc = new Date(ano, mes - 1, dia);
         const hoje = new Date();
         
+        // --- VALIDAÇÃO DE EXISTÊNCIA REAL ---
+        // Verificamos se o JS não "rolou" a data para o mês seguinte
+        const dataExiste = (
+            dataNasc.getFullYear() === ano && 
+            dataNasc.getMonth() === mes - 1 && 
+            dataNasc.getDate() === dia
+        );
+
         // Cálculo da idade
         let idade = hoje.getFullYear() - dataNasc.getFullYear();
         const m = hoje.getMonth() - dataNasc.getMonth();
@@ -73,16 +83,22 @@ function valDatadeNascimento(event) {
             idade--;
         }
 
-        // Validações
-        if (isNaN(dataNasc.getTime()) || dia > 31 || mes > 12 || ano < 1900) {
-            setErr('f-cd', 'e-cd', 'Data inválida');
+        // --- SEQUÊNCIA DE ERROS ---
+        if (!dataExiste) {
+            setErr('f-cd', 'e-cd', 'Esta data não existe');
+        } else if (ano < 1900) {
+            setErr('f-cd', 'e-cd', 'Ano muito antigo');
+        } else if (dataNasc > hoje) {
+            setErr('f-cd', 'e-cd', 'Você ainda não nasceu!');
         } else if (idade < 18) {
             setErr('f-cd', 'e-cd', 'Você deve ter pelo menos 18 anos');
         } else {
+            // Se passou em tudo, limpa o erro
             clrErr('f-cd', 'e-cd');
         }
     } else {
-        // Enquanto o usuário está digitando e não completou, apenas limpamos o erro
+        // Enquanto o usuário digita, não mostramos erro de "data incompleta"
+        // para não irritar o usuário, apenas limpamos se houver um antigo.
         clrErr('f-cd', 'e-cd');
     }
 }

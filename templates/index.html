@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amnesia</title>
+    <title>Amnesia — Cinema</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
     <link rel="stylesheet" href="../static/css/style.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
@@ -19,13 +19,13 @@
                 <button id="btnOpenModal" class="add-btn">+ adicionar</button>
             </div>
             <div class="user-info">
-                <span>Olá, Felps</span>
-                <img src="https://i.pravatar.cc/150?u=felps" alt="User" class="avatar">
-                <button class="logout-btn">⎋</button>
+                <span>Olá, {{ user.nome_usuario }}</span>
+                <img src="https://i.pravatar.cc/150?u={{ user.nome_usuario }}" alt="User" class="avatar">
+                <a href="/logout" class="logout-btn">Sair</a>
             </div>
         </div>
     </header>
- 
+
     <main>
         <div class="content-header">
             <h1>Explorar</h1>
@@ -34,26 +34,42 @@
                 <input type="text" id="searchInput" placeholder="Pesquisar filme">
             </div>
         </div>
- 
-        <section class="movie-grid" id="movieGrid"></section>
+
+        <section class="movie-grid" id="movieGrid">
+            {% for filme in filmes %}
+            <div class="movie-card" onclick="window.location.href='/filmes/{{ filme.ID }}'">
+                <div class="rating-badge">{{ filme.Nota_Media or '0.0' }} / 5 ★</div>
+                
+                {# Se não tiver Capa_URL no banco, usa uma imagem padrão #}
+                <img src="{{ filme.Capa_URL if filme.Capa_URL else 'https://via.placeholder.com/400x600' }}" alt="{{ filme.Titulo }}">
+                
+                <div class="card-overlay">
+                    <h3>{{ filme.Titulo }}</h3>
+                    <p>{{ filme.Diretor }} • {{ filme.Ano_Lancamento }}</p>
+                </div>
+            </div>
+            {% else %}
+            <p>Nenhum filme encontrado no catálogo.</p>
+            {% endfor %}
+        </section>
     </main>
- 
+
     <div id="modal" class="modal">
         <div class="modal-content">
             <h2>Novo Filme</h2>
-            <input type="text" id="m-title" placeholder="Título do Filme">
-            <input type="text" id="m-genre" placeholder="Gênero">
-            <input type="text" id="m-year" placeholder="Ano">
-            <input type="text" id="m-rating" placeholder="Nota (ex: 4,5)">
-            <input type="text" id="m-img" placeholder="URL da Imagem">
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                <button class="btn-save" onclick="addMovie()">Salvar</button>
-            </div>
+            <form action="/admin/adicionar_filme" method="POST"> <input type="text" name="titulo" id="m-title" placeholder="Título do Filme" required>
+                <input type="text" name="genero" id="m-genre" placeholder="Gênero">
+                <input type="text" name="ano" id="m-year" placeholder="Ano">
+                <input type="text" name="capa_url" id="m-img" placeholder="URL da Imagem (Capa)">
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar no Banco</button>
+                </div>
+            </form>
         </div>
     </div>
- 
+
     <script src="../static/js/app.js"></script>
+    <script src="{{ url_for('static', path='js/app.js') }}"></script>
 </body>
 </html>
- 

@@ -70,8 +70,8 @@ header {
     justify-content: flex-end;
 }
  
-.avatar { width: 45px; height: 45px; border-radius: 8px; }
-.logout-btn { background: none; border: none; color: var(--text-gray); cursor: pointer; font-size: 35px; }
+.avatar { width: 70px; height: 70px; border-radius: 8px; }
+.logout-btn { background: none; border: none; color: var(--text-gray); cursor: pointer; font-size: 25px; }
  
 /* Main Content */
 main { padding: 30px 5%; }
