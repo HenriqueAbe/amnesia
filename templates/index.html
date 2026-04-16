@@ -1,13 +1,59 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exploração - Seu Site</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Amnesia</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <img src="../static/images/exploracao.svg" alt="Exploração">
+    <header>
+        <div class="header-top">
+            <div class="logo">
+                <img src="../static/imagens/amnesiaLogo.png" alt="Logo" class="logo-img">
+            </div>
+            <div class="nav-main">
+                <button class="nav-item active">🎁 Explorar</button>
+                <button class="nav-item">🎬 Meus filmes</button>
+                <button id="btnOpenModal" class="add-btn">+ adicionar</button>
+            </div>
+            <div class="user-info">
+                <span>Olá, Felps</span>
+                <img src="https://i.pravatar.cc/150?u=felps" alt="User" class="avatar">
+                <button class="logout-btn">⎋</button>
+            </div>
+        </div>
+    </header>
+ 
+    <main>
+        <div class="content-header">
+            <h1>Explorar</h1>
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Pesquisar filme">
+            </div>
+        </div>
+ 
+        <section class="movie-grid" id="movieGrid"></section>
+    </main>
+ 
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Novo Filme</h2>
+            <input type="text" id="m-title" placeholder="Título do Filme">
+            <input type="text" id="m-genre" placeholder="Gênero">
+            <input type="text" id="m-year" placeholder="Ano">
+            <input type="text" id="m-rating" placeholder="Nota (ex: 4,5)">
+            <input type="text" id="m-img" placeholder="URL da Imagem">
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button class="btn-save" onclick="addMovie()">Salvar</button>
+            </div>
+        </div>
     </div>
+ 
+    <script src="../static/js/app.js"></script>
 </body>
+</html>
+ 
