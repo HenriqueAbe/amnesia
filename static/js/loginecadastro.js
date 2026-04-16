@@ -2,6 +2,25 @@
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@(gmail|hotmail|yahoo|outlook|live|icloud)\.(com|com\.br|net|org)$/i;
 const SYM_RE   = /[!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~]/;
 const DATE_RE  = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+const NOME_RE = /^[a-zA-ZÀ-ÿ\s]{8,}$/; 
+
+/* validação do nome */
+function valNome() {
+    const v = $('c-nome').value.trim();
+    if (!v) {
+        clrErr('f-cn', 'e-cn');
+        return;
+    }
+
+    // Verifica se tem pelo menos 8 caracteres e se contém apenas letras e espaços
+    if (v.length < 8) {
+        setErr('f-cn', 'e-cn', 'O nome deve ter no mínimo 8 caracteres');
+    } else if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(v)) {
+        setErr('f-cn', 'e-cn', 'O nome não pode conter números ou símbolos');
+    } else {
+        clrErr('f-cn', 'e-cn');
+    }
+}
 
 /* helpers */
 const $ = id => document.getElementById(id);
@@ -157,16 +176,28 @@ function doLogin() {
 
 /* cadastro */
 function doCadastro() {
+    if (event) event.preventDefault();
     const nome     = $('c-nome').value.trim();
     const email    = $('c-email').value.trim();
     const dataNasc = $('c-data_de_nascimento').value.trim();
     const senha    = $('c-senha').value;
     const conf     = $('c-conf').value;
+    
     let ok = true;
 
+    // Limpa erros anteriores
     [['f-cn','e-cn'],['f-ce','e-ce'],['f-cd','e-cd'],['f-cs','e-cs'],['f-cc','e-cc']].forEach(([f,e]) => clrErr(f,e));
 
-    if (!nome) { setErr('f-cn','e-cn','Informe seu nome'); ok = false; }
+    if (!nome) { 
+        setErr('f-cn','e-cn','Informe seu nome'); 
+        ok = false; 
+    } else if (nome.length < 8) {
+        setErr('f-cn', 'e-cn', 'O nome deve ter no mínimo 8 caracteres');
+        ok = false;
+    } else if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
+        setErr('f-cn', 'e-cn', 'O nome não deve conter números ou símbolos');
+        ok = false;
+    }
 
     if (!email) { setErr('f-ce','e-ce','Informe o e-mail'); ok = false; }
     else if (!EMAIL_RE.test(email)) { setErr('f-ce','e-ce','E-mail inválido'); ok = false; }
@@ -203,7 +234,9 @@ function doCadastro() {
 
     // SE TUDO ESTIVER OK NO FRONT-END, ENVIA PARA O BACK-END (FASTAPI)
     if (ok) {
-        $('form-cadastro').submit();
+        $('form-cadastro').submit(); // Aqui ele envia para o FastAPI
+    } else {
+        console.log("Cadastro interrompido: existem erros no formulário.");
     }
 }
 

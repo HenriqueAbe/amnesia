@@ -71,13 +71,13 @@
             {% if erro_cadastro %}{{ erro_cadastro }}{% endif %}
           </p>
 
-          <form id="form-cadastro" action="/cadastro" method="POST">
+          <form id="form-cadastro" action="/cadastro" method="POST" onsubmit="doCadastro(event)">
             <div class="field" id="f-cn">
               <svg class="ico" viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="4"/>
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
               </svg>
-              <input type="text" id="c-nome" name="nome_usuario" placeholder="Nome" autocomplete="name" oninput="clrF('f-cn','e-cn')">
+              <input type="text" id="c-nome" name="nome_usuario" placeholder="Nome" autocomplete="name" oninput="valNome()">
               <p class="err" id="e-cn"></p>
             </div>
 
