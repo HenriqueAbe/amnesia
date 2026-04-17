@@ -1,5 +1,5 @@
 import pymysql
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -7,14 +7,33 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
-from db import get_db
+import bcrypt
+
+import jwt
+from jwt.exceptions import InvalidTokenError
+
+from db import get_db, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+
+
+def hash_password(plain: str) -> str:
+    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    return bcrypt.checkpw(plain.encode(), hashed.encode())
+
+
+def create_access_token(data: dict) -> str:
+    payload = data.copy()
+    payload["exp"] = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 #Setup
 app = FastAPI(title="Amnesia – Cinema")
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key="", #devemos adicionar uma secret key
+    secret_key=SECRET_KEY,
     session_cookie="amnesia_session",
     max_age=50_000,
     same_site="lax",
@@ -28,8 +47,20 @@ templates = Jinja2Templates(directory="templates")
 
 #helpers
 def get_current_user(request: Request) -> dict | None:
-    """Return the session user dict, or None if not logged in."""
-    return request.session.get("user")
+    # Decodifica o JWT da sessão e retorna os dados do usuario, ou None.
+    token = request.session.get("token")
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return {
+            "id": payload.get("sub"),
+            "nome_usuario": payload.get("nome_usuario"),
+            "email": payload.get("email"),
+            "tipo": payload.get("tipo"),
+        }
+    except InvalidTokenError:
+        return None
 
 
 #rotas publicas
@@ -79,7 +110,7 @@ async def cadastro(
                 INSERT INTO Perfil (Nome_Usuario, Email, Senha, Tipo)
                 VALUES (%s, %s, %s, 'USER')
                 """,
-                (nome_usuario, email, senha),
+                (nome_usuario, email, hash_password(senha)),
             )
             db.commit()
 
@@ -109,17 +140,18 @@ async def login(
             )
             user = cursor.fetchone()
 
-        if not user or user["Senha"] != senha:
+        if not user or not verify_password(senha, user["Senha"]):
             request.session["erro_login"] = "E-mail ou senha incorretos."
             return RedirectResponse(url="/", status_code=303)
 
-        # populando
-        request.session["user"] = {
-            "id": user["ID"],
+        # Gera JWT e armazena na sessão
+        token = create_access_token({
+            "sub": str(user["ID"]),
             "nome_usuario": user["Nome_Usuario"],
             "email": user["Email"],
             "tipo": user["Tipo"],
-        }
+        })
+        request.session["token"] = token
 
         # Quando clica em ENTRAR, redireciona para a rota que renderiza o index.html
         return RedirectResponse(url="/filmes", status_code=303)
