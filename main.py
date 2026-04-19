@@ -172,6 +172,110 @@ async def logout(request: Request):
     return RedirectResponse(url="/", status_code=303)
 
 
+# Perfil do usuário
+@app.get("/perfil", name="perfil", response_class=HTMLResponse)
+async def editar_perfil(request: Request, db=Depends(get_db)):
+    """Página de edição de perfil do usuário."""
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/", status_code=303)
+
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute(
+                """
+                SELECT ID, Nome_Usuario, Email, Data_Nascimento
+                FROM Perfil
+                WHERE ID = %s
+                """,
+                (user["id"],),
+            )
+            user_data = cursor.fetchone()
+
+            if not user_data:
+                return RedirectResponse(url="/filmes", status_code=303)
+
+    finally:
+        db.close()
+
+    return templates.TemplateResponse("editar-perfil.html", {
+        "request": request,
+        "user": user_data,
+        "erro_perfil": request.session.pop("erro_perfil", None),
+        "sucesso_perfil": request.session.pop("sucesso_perfil", None),
+    })
+
+
+@app.post("/perfil/atualizar", name="atualizar_perfil")
+async def atualizar_perfil(
+    request: Request,
+    nome: str = Form(...),
+    nome_usuario: str = Form(...),
+    nova_senha: str = Form(""),
+    db=Depends(get_db),
+):
+    """Atualiza os dados do perfil do usuário."""
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/", status_code=303)
+
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            # Verifica se o novo nome de usuário já existe
+            if nome_usuario != user["nome_usuario"]:
+                cursor.execute(
+                    "SELECT ID FROM Perfil WHERE Nome_Usuario = %s AND ID != %s",
+                    (nome_usuario, user["id"]),
+                )
+                if cursor.fetchone():
+                    request.session["erro_perfil"] = "Nome de usuário já utilizado."
+                    return RedirectResponse(url="/perfil", status_code=303)
+
+            # Prepara a query de atualização
+            update_fields = ["Nome_Usuario = %s"]
+            update_values = [nome_usuario]
+
+            # Se forneceu nova senha, atualiza
+            if nova_senha and len(nova_senha) >= 6:
+                update_fields.append("Senha = %s")
+                update_values.append(hash_password(nova_senha))
+            elif nova_senha and len(nova_senha) < 6:
+                request.session["erro_perfil"] = "A senha deve ter no mínimo 6 caracteres."
+                return RedirectResponse(url="/perfil", status_code=303)
+
+            update_values.append(user["id"])
+
+            sql = f"""
+                UPDATE Perfil
+                SET {", ".join(update_fields)}
+                WHERE ID = %s
+            """
+
+            cursor.execute(sql, update_values)
+            db.commit()
+
+            # Atualiza o token na sessão com o novo nome_usuario
+            if nome_usuario != user["nome_usuario"]:
+                token = create_access_token({
+                    "sub": str(user["id"]),
+                    "nome_usuario": nome_usuario,
+                    "email": user["email"],
+                    "tipo": user["tipo"],
+                })
+                request.session["token"] = token
+
+            request.session["sucesso_perfil"] = "Perfil atualizado com sucesso!"
+
+    except Exception as e:
+        db.rollback()
+        request.session["erro_perfil"] = f"Erro ao atualizar perfil: {str(e)}"
+        print(f"[ERRO PERFIL] {e}")
+    finally:
+        db.close()
+
+    return RedirectResponse(url="/perfil", status_code=303)
+
+
 #rotas protegidas
 @app.get("/filmes", name="filmes", response_class=HTMLResponse)
 async def listar_filmes(request: Request, db=Depends(get_db)):
