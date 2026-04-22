@@ -9,7 +9,7 @@ CREATE TABLE Perfil (
     Senha VARCHAR(255) NOT NULL,
     Tipo ENUM('USER', 'ADMIN') DEFAULT 'USER',
     Data_Cadastro DATETIME DEFAULT CURRENT_TIMESTAMP,
-	CAPA_Usuario VARCHAR(2083)
+	Foto_Usuario mediumblob DEFAULT NULL
 );
 
 CREATE TABLE Diretor (
@@ -76,7 +76,7 @@ CREATE TABLE Avaliacao (
 );
 
 
-INSERT INTO Perfil (Nome_Usuario, Email, Senha, Tipo, CAPA_Usuario) VALUES
+INSERT INTO Perfil (Nome_Usuario, Email, Senha, Tipo, Foto_Usuario) VALUES
 ('admin_geral', 'admin@cinema.com', 'pwd123', 'ADMIN',''),
 ('felipe_urbanek', 'felipe@empresa.com', 'pwd123', 'ADMIN',''), 
 ('joao_cine', 'joao@gmail.com', 'pwd123', 'USER',''),
