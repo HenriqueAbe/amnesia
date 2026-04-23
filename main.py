@@ -12,7 +12,7 @@ import bcrypt
 import jwt
 from jwt.exceptions import InvalidTokenError
 
-from db import get_db, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from config import get_db, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 def hash_password(plain: str) -> str:
