@@ -1,17 +1,13 @@
 import pymysql
 from datetime import datetime, timedelta
-
-from fastapi import FastAPI, Request, Form, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, Request, Form, Depends, Body
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-
 import bcrypt
-
 import jwt
 from jwt.exceptions import InvalidTokenError
-
 from config import get_db, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
@@ -25,10 +21,12 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def create_access_token(data: dict) -> str:
     payload = data.copy()
-    payload["exp"] = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload["exp"] = datetime.utcnow(
+    ) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-#Setup
+
+# Setup
 app = FastAPI(title="Amnesia – Cinema")
 
 app.add_middleware(
@@ -40,14 +38,12 @@ app.add_middleware(
     https_only=False
 )
 
-# arquivos e templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-#helpers
+# helpers
 def get_current_user(request: Request) -> dict | None:
-    # Decodifica o JWT da sessão e retorna os dados do usuario, ou None.
     token = request.session.get("token")
     if not token:
         return None
@@ -63,26 +59,25 @@ def get_current_user(request: Request) -> dict | None:
         return None
 
 
-#rotas publicas
+# rotas públicas
 
 @app.get("/", response_class=HTMLResponse)
 async def login_page(request: Request):
-    """
-    Serve the login / registration page.
-    If the user is already authenticated, send them straight to /filmes.
-    """
     if get_current_user(request):
         return RedirectResponse(url="/filmes", status_code=303)
 
     return templates.TemplateResponse("loginecadastro.html", {
         "request": request,
-        "erro_login": request.session.pop("erro_login", None),
-        "erro_cadastro": request.session.pop("erro_cadastro", None),
+        "erro_login":       request.session.pop("erro_login", None),
+        "erro_cadastro":    request.session.pop("erro_cadastro", None),
         "sucesso_cadastro": request.session.pop("sucesso_cadastro", None),
+        "form_nome":        request.session.pop("form_nome", ""),
+        "form_email":       request.session.pop("form_email", ""),
+        "form_data":        request.session.pop("form_data", ""),
     })
 
 
-#autenticação e registro
+# autenticação e registro
 
 @app.post("/cadastro", name="cadastro")
 async def cadastro(
@@ -90,21 +85,22 @@ async def cadastro(
     nome_usuario: str = Form(...),
     email: str = Form(...),
     senha: str = Form(...),
+    data_de_nascimento: str = Form(""),
     db=Depends(get_db),
 ):
+    def salvar_e_redirecionar(erro: str):
+        request.session["erro_cadastro"] = erro
+        request.session["form_nome"] = nome_usuario
+        request.session["form_email"] = email
+        request.session["form_data"] = data_de_nascimento
+        return RedirectResponse(url="/", status_code=303)
+
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
-            cursor.execute(
-                "SELECT ID FROM Perfil WHERE Email = %s OR Nome_Usuario = %s",
-                (email, nome_usuario),
-            )
-            existing = cursor.fetchone()
+            cursor.execute("SELECT ID FROM Perfil WHERE Email = %s", (email,))
+            if cursor.fetchone():
+                return salvar_e_redirecionar("Este e-mail já está cadastrado.")
 
-            if existing:
-                request.session["erro_cadastro"] = "E-mail ou nome de usuário já cadastrado."
-                return RedirectResponse(url="/?tab=cad", status_code=303)
-
-            # Inserção do novo usuário
             cursor.execute(
                 """
                 INSERT INTO Perfil (Nome_Usuario, Email, Senha, Tipo)
@@ -119,8 +115,7 @@ async def cadastro(
 
     except Exception as e:
         db.rollback()
-        request.session["erro_cadastro"] = f"Erro ao cadastrar: {str(e)}"
-        return RedirectResponse(url="/?tab=cad", status_code=303)
+        return salvar_e_redirecionar(f"Erro ao cadastrar: {str(e)}")
     finally:
         db.close()
 
@@ -144,7 +139,6 @@ async def login(
             request.session["erro_login"] = "E-mail ou senha incorretos."
             return RedirectResponse(url="/", status_code=303)
 
-        # Gera JWT e armazena na sessão
         token = create_access_token({
             "sub": str(user["ID"]),
             "nome_usuario": user["Nome_Usuario"],
@@ -152,8 +146,6 @@ async def login(
             "tipo": user["Tipo"],
         })
         request.session["token"] = token
-
-        # Quando clica em ENTRAR, redireciona para a rota que renderiza o index.html
         return RedirectResponse(url="/filmes", status_code=303)
 
     except Exception as e:
@@ -163,21 +155,18 @@ async def login(
         db.close()
 
 
-#logout
+# logout
 
 @app.get("/logout", name="logout")
 async def logout(request: Request):
-    """Clear the session and redirect to the login page."""
     request.session.clear()
     return RedirectResponse(url="/", status_code=303)
 
 
-#rotas protegidas
+# rotas protegidas
+
 @app.get("/filmes", name="filmes", response_class=HTMLResponse)
 async def listar_filmes(request: Request, db=Depends(get_db)):
-    """
-    Página principal de filmes - Agora renderiza o arquivo index.html
-    """
     user = get_current_user(request)
     if not user:
         request.session["erro_login"] = "Faça login para acessar."
@@ -209,8 +198,6 @@ async def listar_filmes(request: Request, db=Depends(get_db)):
         db.close()
 
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
-
-    # CARREGA O INDEX.HTML (O arquivo do Grid)
     return templates.TemplateResponse("index.html", {
         "request": request,
         "user": user,
@@ -242,11 +229,9 @@ async def detalhe_filme(request: Request, filme_id: int, db=Depends(get_db)):
                 (filme_id,),
             )
             filme = cursor.fetchone()
-
             if not filme:
                 return RedirectResponse(url="/filmes", status_code=303)
 
-            # Busca Gêneros
             cursor.execute(
                 """
                 SELECT g.Nome FROM Genero g
@@ -257,7 +242,6 @@ async def detalhe_filme(request: Request, filme_id: int, db=Depends(get_db)):
             )
             generos = [row["Nome"] for row in cursor.fetchall()]
 
-            # Busca Elenco
             cursor.execute(
                 """
                 SELECT aa.Nome FROM Ator_Atriz aa
@@ -268,7 +252,6 @@ async def detalhe_filme(request: Request, filme_id: int, db=Depends(get_db)):
             )
             atores = [row["Nome"] for row in cursor.fetchall()]
 
-            # Busca Avaliações
             cursor.execute(
                 """
                 SELECT
@@ -331,7 +314,7 @@ async def avaliar_filme(
 
     return RedirectResponse(url=f"/filmes/{filme_id}", status_code=303)
 
-# Rota para Adicionar Filme (Gatilhada pelo Modal do index.html)
+
 @app.post("/adicionar-filme")
 async def adicionar_filme(
     request: Request,
@@ -348,22 +331,23 @@ async def adicionar_filme(
 
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
-            # Lógica do Diretor
-            cursor.execute("SELECT ID FROM Diretor WHERE Nome = %s", (diretor_nome,))
+            cursor.execute(
+                "SELECT ID FROM Diretor WHERE Nome = %s", (diretor_nome,))
             diretor = cursor.fetchone()
-            
             if diretor:
                 diretor_id = diretor['ID']
             else:
-                cursor.execute("INSERT INTO Diretor (Nome) VALUES (%s)", (diretor_nome,))
+                cursor.execute(
+                    "INSERT INTO Diretor (Nome) VALUES (%s)", (diretor_nome,))
                 diretor_id = cursor.lastrowid
 
-            # Inserir Filme
-            sql = """
+            cursor.execute(
+                """
                 INSERT INTO Filme (Titulo, Sinopse, Ano_Lancamento, Capa_URL, Diretor_ID)
                 VALUES (%s, %s, %s, %s, %s)
-            """
-            cursor.execute(sql, (titulo, sinopse, ano, capa_url, diretor_id))
+                """,
+                (titulo, sinopse, ano, capa_url, diretor_id)
+            )
             db.commit()
 
         return RedirectResponse(url="/filmes", status_code=303)
@@ -371,5 +355,101 @@ async def adicionar_filme(
         db.rollback()
         print(f"Erro ao inserir filme: {e}")
         return RedirectResponse(url="/filmes", status_code=303)
+    finally:
+        db.close()
+
+# --- NOVAS ROTAS DE PERFIL ---
+
+@app.get("/editar-perfil", response_class=HTMLResponse)
+async def editar_perfil(request: Request, db=Depends(get_db)):
+    user_session = get_current_user(request)
+    if not user_session:
+        return RedirectResponse(url="/", status_code=303)
+    
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            # Seleciona as colunas conforme o seu script SQL
+            cursor.execute("SELECT ID, Nome_Usuario, Email, Tipo FROM Perfil WHERE ID = %s", (user_session["id"],))
+            user_data = cursor.fetchone()
+    finally:
+        db.close()
+
+    return templates.TemplateResponse("editar-perfil.html", {"request": request, "user": user_data})
+
+
+@app.post("/api/update-profile")
+async def update_profile(request: Request, data: dict = Body(...), db=Depends(get_db)):
+    user = get_current_user(request)
+    if not user:
+        return JSONResponse(status_code=401, content={"message": "Não autorizado"})
+    
+    try:
+        with db.cursor() as cursor:
+            # Atualiza usando os nomes das colunas do seu banco
+            cursor.execute(
+                "UPDATE Perfil SET Nome_Usuario = %s WHERE ID = %s",
+                (data.get("nome_usuario"), user["id"])
+            )
+            db.commit()
+            
+            # Atualiza o token para refletir o novo nome no Header
+            new_token = create_access_token({
+                "sub": str(user["id"]),
+                "nome_usuario": data.get("nome_usuario"),
+                "email": user["email"],
+                "tipo": user["tipo"],
+            })
+            request.session["token"] = new_token
+            
+        return {"status": "success"}
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(status_code=500, content={"message": str(e)})
+    finally:
+        db.close()
+
+
+@app.post("/api/change-password")
+async def change_password(request: Request, data: dict = Body(...), db=Depends(get_db)):
+    user = get_current_user(request)
+    if not user:
+        return JSONResponse(status_code=401, content={"message": "Não autorizado"})
+    
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("SELECT Senha FROM Perfil WHERE ID = %s", (user["id"],))
+            result = cursor.fetchone()
+            
+            if not result or not verify_password(data.get("current_password"), result["Senha"]):
+                return JSONResponse(status_code=400, content={"message": "Senha atual incorreta"})
+            
+            nova_senha_hash = hash_password(data.get("new_password"))
+            cursor.execute("UPDATE Perfil SET Senha = %s WHERE ID = %s", (nova_senha_hash, user["id"]))
+            db.commit()
+            
+        return {"status": "success"}
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(status_code=500, content={"message": str(e)})
+    finally:
+        db.close()
+
+
+@app.post("/api/delete-account")
+async def delete_account(request: Request, db=Depends(get_db)):
+    user = get_current_user(request)
+    if not user:
+        return JSONResponse(status_code=401, content={"message": "Não autorizado"})
+    
+    try:
+        with db.cursor() as cursor:
+            cursor.execute("DELETE FROM Perfil WHERE ID = %s", (user["id"],))
+            db.commit()
+        
+        request.session.clear()
+        return {"status": "success"}
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(status_code=500, content={"message": str(e)})
     finally:
         db.close()

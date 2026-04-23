@@ -1,5 +1,5 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
 :root {
   --bg:       #0c0e14;
   --surface:  #13161f;
@@ -14,12 +14,12 @@
   --r:        10px;
   --t:        0.2s ease;
 }
-
+ 
 html, body {
   height: 100%;
   overflow: hidden;
 }
-
+ 
 body {
   background: var(--bg);
   display: flex;
@@ -28,7 +28,7 @@ body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   color: var(--text);
 }
-
+ 
 /* ── Layout ── */
 .wrap {
   display: flex;
@@ -38,7 +38,7 @@ body {
   background: var(--surface);
   border-radius: 10px;
 }
-
+ 
 /* ── Left ── */
 .left {
   position: relative;
@@ -46,33 +46,33 @@ body {
   flex-shrink: 0;
   overflow: hidden;
 }
-
+ 
 .logo {
-    width: 220px;
-    height: auto;
-    position: absolute;
-    z-index: 3;
-    top: 25px;
-    left: -25px;
+  width: 220px;
+  height: auto;
+  position: absolute;
+  z-index: 3;
+  top: 25px;
+  left: -25px;
 }
-
+ 
 .cinema {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
-
+ 
 .overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(to bottom, transparent 45%, rgba(12,14,20,.9) 100%);
 }
-
+ 
 .left-info {
   position: absolute;
   bottom: 28px;
@@ -80,7 +80,7 @@ body {
   right: 28px;
   z-index: 3;
 }
-
+ 
 .tag {
   display: inline-block;
   font-size: 11px;
@@ -89,14 +89,14 @@ body {
   color: var(--accent);
   margin-bottom: 8px;
 }
-
+ 
 .left-info p {
   font-size: 19px;
   font-weight: 500;
   line-height: 1.4;
   color: #fff;
 }
-
+ 
 /* ── Right ── */
 .right {
   flex: 1;
@@ -105,7 +105,7 @@ body {
   padding: 36px 44px;
   min-width: 0;
 }
-
+ 
 /* ── Tabs ── */
 .tabs {
   display: flex;
@@ -115,7 +115,7 @@ body {
   gap: 4px;
   margin-bottom: 32px;
 }
-
+ 
 .tab {
   flex: 1;
   padding: 9px 0;
@@ -128,13 +128,13 @@ body {
   cursor: pointer;
   transition: background var(--t), color var(--t);
 }
-
+ 
 .tab.active { background: var(--accent); color: #fff; }
 .tab:not(.active):hover { color: var(--text); }
-
+ 
 /* ── Slider ── */
 .slider-wrap { flex: 1; overflow: hidden; }
-
+ 
 .track {
   display: flex;
   width: 200%;
@@ -142,15 +142,15 @@ body {
   align-items: flex-start;
   gap: 0;
 }
-
+ 
 .panel { width: 50%; flex-shrink: 0; }
-
+ 
 .panel h1 {
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 20px;
 }
-
+ 
 /* ── Global error ── */
 .global-err {
   font-size: 13px;
@@ -159,29 +159,33 @@ body {
   margin-bottom: 10px;
   text-align: center;
 }
-
+ 
+/* ── Label acima do campo ── */
+.field-label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+ 
 /* ── Field ── */
 .field { position: relative; margin-bottom: 12px; }
-
-/* Ícones centralizados em relação ao topo do input (22px é metade de 44px) */
-.ico, .eye {
-  position: absolute;
-  top: 22px;
-  transform: translateY(-50%);
-  transition: color var(--t);
-  z-index: 2;
-}
-
+ 
 .ico {
+  position: absolute;
+  top: 50%;
   left: 13px;
+  transform: translateY(-50%);
   width: 15px;
   height: 15px;
   fill: none;
   stroke: var(--muted);
   stroke-width: 2;
   pointer-events: none;
+  z-index: 2;
 }
-
+ 
 .field input {
   width: 100%;
   background: var(--surface2);
@@ -194,11 +198,11 @@ body {
   outline: none;
   transition: border-color var(--t);
 }
-
+ 
 .field input::placeholder { color: var(--muted); }
 .field input:focus { border-color: var(--focus); }
 .field.has-error input { border-color: var(--error); }
-
+ 
 .err {
   font-size: 12px;
   color: var(--error);
@@ -206,10 +210,13 @@ body {
   margin-top: 3px;
   padding-left: 2px;
 }
-
+ 
 /* ── Eye toggle ── */
 .eye {
+  position: absolute;
+  top: 50%;
   right: 11px;
+  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
@@ -218,8 +225,10 @@ body {
   align-items: center;
   padding: 2px;
   line-height: 0;
+  z-index: 2;
+  transition: color var(--t);
 }
-
+ 
 .eye svg {
   width: 15px;
   height: 15px;
@@ -227,10 +236,10 @@ body {
   stroke: currentColor;
   stroke-width: 2;
 }
-
+ 
 .eye:hover { color: var(--text); }
 .eye.on { color: var(--accent); }
-
+ 
 /* ── Hints ── */
 .hints {
   display: none;
@@ -238,9 +247,9 @@ body {
   gap: 6px;
   margin-bottom: 12px;
 }
-
+ 
 .hints.show { display: flex; }
-
+ 
 .hints span {
   font-size: 11px;
   padding: 3px 10px;
@@ -250,13 +259,13 @@ body {
   color: var(--muted);
   transition: all var(--t);
 }
-
+ 
 .hints span.ok {
   background: rgba(74,222,128,.12);
   border-color: rgba(74,222,128,.35);
   color: var(--ok);
 }
-
+ 
 /* ── Button ── */
 .btn {
   width: 100%;
@@ -272,29 +281,10 @@ body {
   margin-top: 4px;
   transition: background var(--t), transform .1s;
 }
-
+ 
 .btn:hover { background: var(--focus); }
 .btn:active { transform: scale(.98); }
-
-/* Container do botão para criar o respiro */
-.area-botao {
-    margin-top: 30px; /* Aumenta a distância do formulário */
-    padding-top: 20px;
-    border-top: 1px solid var(--border); /* Uma linha sutil para separar */
-}
-
-/* Se você quiser que o painel use o espaço disponível para empurrar o botão para baixo */
-.panel {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.area-botao {
-    margin-top: auto; /* Empurra o botão para o final do painel */
-    padding-bottom: 10px;
-}
-
+ 
 /* ── Mobile ── */
 @media (max-width: 620px) {
   html, body { overflow: hidden; height: 100%; }
@@ -315,4 +305,3 @@ body {
   .field input { background: rgba(27,30,43,.7); }
   .hints span { background: rgba(27,30,43,.7); }
 }
-
