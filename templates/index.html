@@ -5,34 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amnesia — Cinema</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
 </head>
 <body>
-    <header>
-        <div class="header-top">
-            <div class="logo">
-                <img src="../static/imagens/amnesiaLogo.png" alt="Logo" class="logo-img">
-            </div>
-            
-            <nav class="nav-main">
-                <a href="/" class="nav-item active">🎁 Explorar</a>
-                <a href="/meus-filmes" class="nav-item">🎬 Meus filmes</a>
-            </nav>
 
-            <div class="user-info">
-                <span>Olá, <strong>{{ user.nome_usuario }}</strong></span>
-                <img src="../static/imagens/Usuario.png" alt="User" class="avatar">
-                
-                <a href="/editar-perfil" class="icon-btn config-btn" title="Configurações">
-                    <i class="fa-solid fa-gear"></i>
-                </a>
-
-                <a href="/logout" class="icon-btn logout-btn" title="Sair">
-                    <i class="fa-solid fa-door-open"></i>
-                </a>
-            </div>
-        </div>
-    </header>
+    {% include 'geral/menu.html' %}
 
     <main>
         <div class="content-header">
@@ -61,6 +39,7 @@
         </section>
     </main>
 
-    <script src="../static/js/app.js"></script>
+    <script src="{{ url_for('static', path='js/menu.js')}}"></script>
+    <script src="{{ url_for('static', path='js/app.js') }}"></script>
 </body>
 </html>

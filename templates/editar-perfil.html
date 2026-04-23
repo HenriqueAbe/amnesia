@@ -1,129 +1,128 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editar Perfil — Amnesia</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='css/editar-perfil.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil — Amnesia</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/editar-perfil.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-  <header>
-    <div class="header-top">
-      <div class="logo">
-        <img src="{{ url_for('static', path='imagens/amnesiaLogo.png') }}" alt="Logo" class="logo-img">
-      </div>
-      <div class="nav-main">
-        <button class="nav-item active" onclick="window.location.href='/filmes'">🎁 Início</button>
-      </div>
-      <div class="user-info">
-        <span>Olá, {{ user.nome_usuario }}</span>
+    
+    {% include 'geral/menu.html' %}
 
-        <i class="fa-solid fa-circle-user header-avatar-icon"></i>
-
-        <a href="/logout" class="icon-btn logout-btn" title="Sair">
-          <i class="fa-solid fa-door-open"></i>
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <div class="page-title">Editar perfil</div>
-    <div class="page-sub">Atualize suas informações pessoais e preferências</div>
-
-    <div class="section">
-      <div class="section-title">Foto de perfil</div>
-      <div class="avatar-row">
-        <div class="avatar" id="avatarDisplay">{{ user.Nome_Usuario[:2].upper() if user else 'JS' }}</div>
-        <div class="avatar-actions">
-          <button class="btn-ghost" type="button" onclick="document.getElementById('avatarInput').click()">Alterar
-            foto</button>
-          <input type="file" id="avatarInput" accept="image/*" style="display:none;"
-            onchange="handleAvatarUpload(event)">
-          <div class="avatar-hint">JPG ou PNG. Máximo 2 MB.</div>
+    <main>
+        <div class="content-header">
+            <h1>Editar perfil</h1>
+            <p class="page-sub">Atualize suas informações pessoais e preferências</p>
         </div>
-      </div>
-    </div>
 
-    <div class="section">
-      <div class="section-title">Dados pessoais</div>
-      <form id="profileForm">
-        <div class="grid1">
-          <div class="field-group">
-            <div class="field-label">Nome de usuário</div>
-            <div class="field-wrap">
-              <i class="fa-solid fa-at" style="color: var(--gray-500)"></i>
-              <input type="text" id="inputUsername" value="{{ user.Nome_Usuario if user else '' }}" required>
+        <div class="section">
+            <div class="section-title">Foto de perfil</div>
+            <div class="avatar-row">
+                <div class="profile-avatar" id="avatarDisplay">
+                    <img id="imgPreview" src="{% if user.Foto_Usuario %}data:image/jpeg;base64,{{ user.Foto_Usuario }}{% endif %}" 
+                         style="{% if user.Foto_Usuario %}display:block;{% else %}display:none;{% endif %} width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                    
+                    <span id="avatarInitials" style="{% if user.Foto_Usuario %}display:none;{% endif %}">
+                        {{ user.Nome_Usuario[:2].upper() if user else 'JS' }}
+                    </span>
+                </div>
+                <div class="avatar-actions">
+                    <button class="btn-ghost" type="button" onclick="document.getElementById('avatarInput').click()">
+                        Alterar foto
+                    </button>
+                    <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+                    <div class="avatar-hint">JPG ou PNG. Máximo 2 MB.</div>
+                </div>
             </div>
-          </div>
-          <div class="field-group">
-            <div class="field-label">E-mail <span class="badge badge-verified">✓ verificado</span></div>
-            <div class="field-wrap">
-              <i class="fa-solid fa-envelope" style="color: var(--gray-500)"></i>
-              <input type="email" id="inputEmail" value="{{ user.Email if user else '' }}" readonly>
-            </div>
-          </div>
         </div>
-      </form>
-    </div>
 
-    <div class="section">
-      <div class="section-title">Segurança</div>
-      <form id="securityForm">
-        <div class="grid1">
-          <div class="field-group">
-            <div class="field-label">Senha atual</div>
-            <div class="field-wrap">
-              <input type="password" id="inputCurrentPassword" placeholder="••••••••">
-            </div>
-          </div>
-          <div class="grid2">
-            <div class="field-group">
-              <div class="field-label">Nova senha</div>
-              <div class="field-wrap">
-                <input type="password" id="inputNewPassword" placeholder="••••••••">
-              </div>
-            </div>
-            <div class="field-group">
-              <div class="field-label">Confirmar senha</div>
-              <div class="field-wrap">
-                <input type="password" id="inputConfirmPassword" placeholder="••••••••">
-              </div>
-            </div>
-          </div>
-          <button type="button" class="btn-ghost" onclick="handleChangePassword(event)">Alterar Senha</button>
+        <div class="section">
+            <div class="section-title">Dados pessoais</div>
+            <form id="profileForm">
+                <div class="grid1">
+                    <div class="field-group">
+                        <div class="field-label">Nome de usuário</div>
+                        <div class="field-wrap">
+                            <i class="fa-solid fa-at" style="color: var(--text-gray)"></i>
+                            <input type="text" id="inputUsername" value="{{ user.Nome_Usuario if user else '' }}" oninput="validaNome(this)" required>
+                        </div>
+                        <span id="error-nome" style="color: #ff4d4d; font-size: 12px; margin-top: 5px; display: block; min-height: 15px;"></span>
+                    </div>
+                    <div class="field-group">
+                        <div class="field-label">E-mail</div>
+                        <div class="field-wrap">
+                            <i class="fa-solid fa-envelope" style="color: var(--text-gray)"></i>
+                            <input type="email" id="inputEmail" value="{{ user.Email if user else '' }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-      </form>
-    </div>
 
-    <div class="danger-section">
-      <div class="danger-title">Zona de perigo</div>
-      <div class="action-row"
-        style="display:flex; justify-content: space-between; align-items:center; margin-top:15px;">
-        <p class="a-desc" style="font-size:13px; color: var(--gray-500)">Excluir conta permanentemente.</p>
-        <button type="button" class="btn-delete-trigger" id="openConfirm">Excluir Conta</button>
-      </div>
-      <div class="confirm-box" id="confirmBox">
-        <p class="confirm-label">Digite <code>excluir minha conta</code> para confirmar:</p>
-        <input type="text" id="confirmInput" class="confirm-input">
-        <div class="confirm-actions">
-          <button type="button" class="btn-cancel-danger" id="cancelConfirm">Cancelar</button>
-          <button type="button" class="btn-confirm-delete" id="btnDelete">Confirmar</button>
+        <div class="section">
+            <div class="section-title">Segurança</div>
+            <form id="securityForm">
+                <div class="grid1">
+                    <div class="field-group">
+                        <div class="field-label">Senha atual</div>
+                        <div class="field-wrap">
+                            <input type="password" id="inputCurrentPassword">
+                            <button class="eye" type="button" onclick="togglePw('inputCurrentPassword', this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid2">
+                        <div class="field-group">
+                            <div class="field-label">Nova senha</div>
+                            <div class="field-wrap">
+                                <input type="password" id="inputNewPassword">
+                                <button class="eye" type="button" onclick="togglePw('inputNewPassword', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <div class="field-label">Confirmar senha</div>
+                            <div class="field-wrap">
+                                <input type="password" id="inputConfirmPassword">
+                                <button class="eye" type="button" onclick="togglePw('inputConfirmPassword', this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-ghost" onclick="handleChangePassword(event)">Alterar Senha</button>
+                </div>
+            </form>
         </div>
-      </div>
-    </div>
 
-    <div class="actions-bar">
-      <button type="button" class="btn-cancel-main" onclick="window.location.href='/filmes'">Cancelar</button>
-      <button type="button" class="btn-save" onclick="handleSaveProfile(event)">Salvar alterações</button>
-    </div>
-  </main>
+        <div class="danger-section">
+            <div class="danger-title">Zona de perigo</div>
+            <div class="action-row" style="display:flex; justify-content: space-between; align-items:center; margin-top:15px;">
+                <p style="font-size:13px; color: var(--text-gray)">Excluir conta permanentemente.</p>
+                <button type="button" class="btn-delete-trigger" id="openConfirm">Excluir Conta</button>
+            </div>
+            <div class="confirm-box" id="confirmBox">
+                <p class="confirm-label">Digite <code>excluir minha conta</code> para confirmar:</p>
+                <input type="text" id="confirmInput" class="confirm-input">
+                <div class="confirm-actions" style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button type="button" class="btn-ghost" id="cancelConfirm">Cancelar</button>
+                    <button type="button" class="btn-confirm-delete" id="btnDelete">Confirmar</button>
+                </div>
+            </div>
+        </div>
 
-  <script src="{{ url_for('static', path='js/editar-perfil.js') }}"></script>
+        <div class="actions-bar">
+            <button type="button" class="btn-cancel-main" onclick="window.location.href='/filmes'">Cancelar</button>
+            <button type="button" class="btn-save" onclick="handleSaveProfile(event)">Salvar alterações</button>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', path='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', path='js/editar-perfil.js') }}"></script>
 </body>
-
 </html>

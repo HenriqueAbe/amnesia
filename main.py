@@ -5,6 +5,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
+from fastapi import FastAPI, File, UploadFile, Request
+from fastapi import Response
+import base64
 import bcrypt
 import jwt
 from jwt.exceptions import InvalidTokenError
@@ -453,3 +456,63 @@ async def delete_account(request: Request, db=Depends(get_db)):
         return JSONResponse(status_code=500, content={"message": str(e)})
     finally:
         db.close()
+
+@app.post("/api/upload-avatar")
+async def upload_avatar(request: Request, foto: UploadFile = File(...), db=Depends(get_db)):
+    # 1. Recupera o usuário logado usando sua função helper
+    user_session = get_current_user(request)
+    
+    if not user_session:
+        return JSONResponse(status_code=401, content={"status": "error", "message": "Não autorizado"})
+    
+    try:
+        # 2. Lê os bytes da imagem
+        imagem_bytes = await foto.read()
+        
+        # 3. Atualiza o banco de dados
+        with db.cursor() as cursor:
+            # Note que usamos 'ID' em maiúsculo conforme seu script SQL
+            sql = "UPDATE Perfil SET Foto_Usuario = %s WHERE ID = %s"
+            cursor.execute(sql, (imagem_bytes, user_session["id"]))
+            db.commit()
+            
+        return {"status": "success", "message": "Foto atualizada com sucesso!"}
+    
+    except Exception as e:
+        db.rollback()
+        print(f"[UPLOAD ERRO]: {e}")
+        return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
+    finally:
+        db.close()
+
+
+@app.get("/editar-perfil", response_class=HTMLResponse)
+async def editar_perfil(request: Request, db=Depends(get_db)):
+    user_session = get_current_user(request)
+    if not user_session:
+        return RedirectResponse(url="/", status_code=303)
+    
+    try:
+        with db.cursor(pymysql.cursors.DictCursor) as cursor:
+            # Adicionei Foto_Usuario no SELECT
+            cursor.execute("SELECT ID, Nome_Usuario, Email, Tipo, Foto_Usuario FROM Perfil WHERE ID = %s", (user_session["id"],))
+            user_data = cursor.fetchone()
+            
+            # Converte o BLOB para Base64 se ele existir
+            if user_data and user_data["Foto_Usuario"]:
+                user_data["Foto_Usuario"] = base64.b64encode(user_data["Foto_Usuario"]).decode('utf-8')
+                
+    finally:
+        db.close()
+
+    return templates.TemplateResponse("editar-perfil.html", {"request": request, "user": user_data})
+
+@app.get("/avatar/{user_id}")
+async def get_avatar(user_id: int, db=Depends(get_db)):
+    with db.cursor() as cursor:
+        cursor.execute("SELECT Foto_Usuario FROM Perfil WHERE ID = %s", (user_id,))
+        result = cursor.fetchone()
+        if result and result[0]:
+            return Response(content=result[0], media_type="image/jpeg")
+    # Se não tiver foto, retorna a imagem padrão da sua pasta static
+    return RedirectResponse(url="/static/imagens/Usuario.png")
