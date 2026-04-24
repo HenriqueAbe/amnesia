@@ -1,5 +1,51 @@
+
+/**
+ * Cria uma notificação visual dentro do site
+ * @param {string} mensagem - O texto que vai aparecer
+ * @param {string} tipo - 'sucesso' (roxo) ou 'erro' (vermelho)
+ */
+
+function mostrarAviso(mensagem, tipo = 'sucesso') {
+    const container = document.getElementById('container-avisos');
+    if (!container) return;
+
+    const aviso = document.createElement('div');
+    aviso.className = 'aviso-site';
+    
+    if (tipo === 'erro') {
+        aviso.classList.add('erro');
+    }
+    
+    aviso.innerText = mensagem;
+    container.appendChild(aviso);
+
+    setTimeout(() => {
+        aviso.classList.add('saindo');
+        setTimeout(() => aviso.remove(), 300); 
+    }, 3000);
+}
+
+function showMessage(message, type = 'error') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Configuração da Zona de Perigo ---
     const openBtn = document.getElementById('openConfirm');
     const cancelBtn = document.getElementById('cancelConfirm');
     const confirmBox = document.getElementById('confirmBox');
@@ -35,17 +81,20 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch('/api/delete-account', { method: 'POST' })
             .then(res => {
                 if (res.ok) {
-                    alert('Conta excluída.');
-                    window.location.href = '/';
+                    showMessage('Conta excluída com sucesso.', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    showMessage('Erro ao excluir conta.', 'error');
                 }
-            });
+            })
+            .catch(() => showMessage('Erro de conexão.', 'error'));
         });
     }
 });
 
-/**
- * Alterna visibilidade da senha (Ícone do Olho)
- */
+
 function togglePw(id, btn) {
     const inp = document.getElementById(id);
     const icon = btn.querySelector('i');
@@ -59,10 +108,6 @@ function togglePw(id, btn) {
     }
 }
 
-/**
- * Validação do Nome: Mínimo 8 letras, sem números ou símbolos.
- * Permite digitar, mas exibe erro.
- */
 function validaNome(input) {
     const errorSpan = document.getElementById('error-nome');
     const valor = input.value;
@@ -83,13 +128,10 @@ function validaNome(input) {
         input.classList.remove('has-error');
     }
 
-    errorSpan.textContent = mensagem;
+    if(errorSpan) errorSpan.textContent = mensagem;
     return mensagem === "";
 }
 
-/**
- * Upload de Foto para o Banco (MEDIUMBLOB)
- */
 function handleAvatarUpload(event) {
     const file = event.target.files[0];
     const imgPreview = document.getElementById('imgPreview');
@@ -97,24 +139,23 @@ function handleAvatarUpload(event) {
 
     if (!file) return;
 
-    // Validação de 2MB
     if (file.size > 2 * 1024 * 1024) {
-        alert("A imagem deve ter no máximo 2MB.");
+        showMessage("A imagem deve ter no máximo 2MB.", "error");
         return;
     }
 
-    // Preview Local
     const reader = new FileReader();
     reader.onload = function(e) {
-        imgPreview.src = e.target.result;
-        imgPreview.style.display = 'block';
+        if(imgPreview) {
+            imgPreview.src = e.target.result;
+            imgPreview.style.display = 'block';
+        }
         if (initials) initials.style.display = 'none';
     }
     reader.readAsDataURL(file);
 
-    // Envio FormData para o Backend
     const formData = new FormData();
-    formData.append('foto', file); // O nome aqui deve ser 'foto'
+    formData.append('foto', file);
 
     fetch('/api/upload-avatar', {
         method: 'POST',
@@ -122,22 +163,25 @@ function handleAvatarUpload(event) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.status !== "success") {
-            alert("Erro ao salvar imagem no servidor.");
+        if (data.status === "success") {
+            showMessage("Imagem salva com sucesso!", "success");
+        } else {
+            showMessage("Erro ao salvar imagem no servidor.", "error");
         }
     })
-    .catch(err => console.error("Erro no upload:", err));
+    .catch(err => {
+        console.error("Erro no upload:", err);
+        showMessage("Erro de conexão ao enviar imagem.", "error");
+    });
 }
 
-/**
- * Salva as alterações de Perfil (Nome)
- */
+
 function handleSaveProfile(event) {
     event.preventDefault();
     const inputNome = document.getElementById('inputUsername');
     
     if (!validaNome(inputNome) || inputNome.value.trim() === "") {
-        alert("Por favor, corrija os erros no nome antes de salvar.");
+        showMessage("Por favor, corrija os erros no nome antes de salvar.", "error");
         return;
     }
 
@@ -149,26 +193,36 @@ function handleSaveProfile(event) {
     .then(res => res.json())
     .then(data => {
         if (data.status === "success") {
-            alert("Perfil atualizado com sucesso!");
-            window.location.reload();
+            showMessage("Perfil atualizado com sucesso!", "success");
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } else {
-            alert("Erro ao atualizar perfil.");
+            showMessage("Erro ao atualizar perfil.", "error");
         }
-    });
+    })
+    .catch(() => showMessage("Erro de conexão ao salvar o perfil.", "error"));
 }
 
-/**
- * Altera a Senha
- */
+
 function handleChangePassword(event) {
     event.preventDefault();
     const currentPassword = document.getElementById('inputCurrentPassword').value;
     const newPassword = document.getElementById('inputNewPassword').value;
     const confirm = document.getElementById('inputConfirmPassword').value;
 
-    if (!currentPassword || !newPassword) return alert("Preencha as senhas.");
-    if (newPassword !== confirm) return alert("As senhas não coincidem.");
-    if (newPassword.length < 8) return alert("A nova senha deve ter 8+ caracteres.");
+    if (!currentPassword || !newPassword) {
+        showMessage("Preencha as senhas.", "error");
+        return;
+    }
+    if (newPassword !== confirm) {
+        showMessage("As senhas não coincidem.", "error");
+        return;
+    }
+    if (newPassword.length < 8) {
+        showMessage("A nova senha deve ter 8+ caracteres.", "error");
+        return;
+    }
 
     fetch('/api/change-password', {
         method: 'POST',
@@ -181,10 +235,11 @@ function handleChangePassword(event) {
     .then(res => res.json())
     .then(data => {
         if (data.status === "success") {
-            alert("Senha alterada!");
+            showMessage("Senha alterada com sucesso!", "success");
             document.getElementById('securityForm').reset();
         } else {
-            alert("Erro: " + (data.message || "Senha atual incorreta."));
+            showMessage("Erro: " + (data.message || "Senha atual incorreta."), "error");
         }
-    });
+    })
+    .catch(() => showMessage("Erro de conexão ao alterar a senha.", "error"));
 }

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    
+  
     {% include 'geral/menu.html' %}
 
     <main>
@@ -22,10 +22,9 @@
             <div class="section-title">Foto de perfil</div>
             <div class="avatar-row">
                 <div class="profile-avatar" id="avatarDisplay">
-                    <img id="imgPreview" src="{% if user.Foto_Usuario %}data:image/jpeg;base64,{{ user.Foto_Usuario }}{% endif %}" 
-                         style="{% if user.Foto_Usuario %}display:block;{% else %}display:none;{% endif %} width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                    <img id="imgPreview">
                     
-                    <span id="avatarInitials" style="{% if user.Foto_Usuario %}display:none;{% endif %}">
+                    <span id="avatarInitials">
                         {{ user.Nome_Usuario[:2].upper() if user else 'JS' }}
                     </span>
                 </div>
