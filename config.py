@@ -6,10 +6,10 @@ load_dotenv()
 
 # Configuração do banco de dados
 DB_CONFIG = {
-    "host": os.getenv("HOST"),
-    "user": os.getenv("USER"),
-    "password": os.getenv("PASSWORD"),
-    "database": os.getenv("DATABASE")
+    "host":     os.getenv("HOST"),
+    "user":     os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DATABASE"),
 }
 # TODO: Alterar para .env
 # JWT
