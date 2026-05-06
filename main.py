@@ -16,7 +16,7 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=SECRET_KEY,
     session_cookie="amnesia_session",
-    max_age=50_000,
+    max_age=86_400,
     same_site="lax",
     https_only=False,
 )
