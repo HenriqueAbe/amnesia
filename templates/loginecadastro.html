@@ -158,5 +158,34 @@
 {% if erro_cadastro %}
 <script>switchTab('cad');</script>
 {% endif %}
+
+<!-- Coloque isso logo antes de </body> -->
+{% if sucesso_cadastro %}
+<div class="toast-success show" id="toast-success">
+  <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+  </svg>
+  <span class="toast-msg">{{ sucesso_cadastro }}</span>
+  <button class="toast-close" type="button" onclick="fecharToast()">×</button>
+</div>
+
+<script>
+  // Garante que o usuário veja a aba de Login após o sucesso
+  switchTab('login');
+  
+  // Remove o pop-up automaticamente após 5 segundos
+  setTimeout(() => {
+      const toast = document.getElementById('toast-success');
+      if (toast) toast.style.display = 'none';
+  }, 5000);
+
+  // Função para fechar manualmente
+  function fecharToast() {
+      const toast = document.getElementById('toast-success');
+      if (toast) toast.style.display = 'none';
+  }
+</script>
+{% endif %}
 </body>
 </html>

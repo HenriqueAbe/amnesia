@@ -2,9 +2,9 @@ DROP DATABASE IF EXISTS amnesia;
 CREATE DATABASE amnesia;
 USE amnesia;
 
-CREATE TABLE Perfil (
+CREATE TABLE Usuario (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    Nome_Usuario VARCHAR(50) UNIQUE NOT NULL,
+    Nome_Usuario VARCHAR(50) NOT NULL,
     Email VARCHAR(100) UNIQUE NOT NULL,
     Senha VARCHAR(255) NOT NULL,
     Tipo ENUM('USER', 'ADMIN') DEFAULT 'USER',
@@ -151,8 +151,6 @@ INSERT INTO Avaliacao (Filme_ID, Perfil_ID, Nota, Comentario, Data_Avaliacao) VA
 (8, 5, 4.5, 'Final surpreendente!', STR_TO_DATE('15/01/2026', '%d/%m/%Y')),
 (10, 17, 5.0, 'Melhor vilão do cinema.', STR_TO_DATE('20/01/2026', '%d/%m/%Y')),
 (2, 18, 4.0, 'Visual lindo, mas um pouco longo.', STR_TO_DATE('25/01/2026', '%d/%m/%Y'));
-
-
 
 SELECT 
     f.Titulo AS 'Filme', 

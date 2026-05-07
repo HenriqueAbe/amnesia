@@ -247,3 +247,25 @@ function checarFormulario() {
         btn.style.opacity = "0.5";
     }
 }
+
+/* ── Toast de Sucesso ── */
+document.addEventListener('DOMContentLoaded', () => {
+    const toast = $('toast-success');
+    if (toast) {
+        // Inicia a animação de entrada
+        toast.classList.add('show');
+        
+        // Remove do DOM após 5 segundos (tempo da entrada + espera + saída)
+        setTimeout(() => {
+            if (toast) toast.style.display = 'none';
+        }, 5000);
+    }
+});
+
+/* Botão de fechar o Toast manualmente */
+function fecharToast() {
+    const toast = $('toast-success');
+    if (toast) {
+        toast.style.display = 'none';
+    }
+}
