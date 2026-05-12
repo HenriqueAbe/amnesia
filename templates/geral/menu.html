@@ -16,6 +16,10 @@
 
             <a href="/" class="nav-item-menu">🎁 Explorar</a>
             <a href="/meus-filmes" class="nav-item-menu">🎬 Meus filmes</a>
+            {# Só mostra o Painel Admin se o usuário tiver permissão #}
+            {% if user.is_admin %}
+            <a href="/admin/dashboard" class="nav-item-menu">📊 Painel Admin</a>
+            {% endif %}
         </nav>
 
         <div class="user-info-menu">

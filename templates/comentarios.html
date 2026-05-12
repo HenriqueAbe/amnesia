@@ -1,0 +1,123 @@
+{% include 'geral/menu.html' %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oppenheimer — Amnesia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/detalhes.css') }}">
+</head>
+<body>
+
+<div class="movie-hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+        <div class="movie-poster">🎬</div>
+        <div class="movie-meta">
+            <div class="movie-genre-tag"><i class="fa-solid fa-tag"></i> Drama · História</div>
+            <h1 class="movie-title">Oppenheimer</h1>
+            <div class="movie-info-row">
+                <span>Christopher Nolan</span>
+                <span class="dot">•</span>
+                <span>2023</span>
+                <span class="dot">•</span>
+                <span>3h 0min</span>
+            </div>
+            <div class="global-rating">
+                <div class="rating-num">4.7</div>
+                <div class="rating-detail">
+                    <div class="stars-row">
+                        <span class="star-filled">★</span><span class="star-filled">★</span>
+                        <span class="star-filled">★</span><span class="star-filled">★</span>
+                        <span class="star-filled" style="opacity:0.5">★</span>
+                    </div>
+                    <div class="rating-count">2.183 avaliações</div>
+                </div>
+            </div>
+            <p class="movie-sinopse">A história do físico J. Robert Oppenheimer e seu papel no desenvolvimento da primeira bomba atômica durante a Segunda Guerra Mundial, enfrentando as consequências éticas e morais de sua criação.</p>
+            <div class="hero-actions">
+                <button class="btn-fav" id="btnFav" onclick="toggleFav(this)">
+                    <i class="fa-regular fa-heart"></i> Favoritar
+                </button>
+                <button class="btn-fav" style="color:var(--text-gray);">
+                    <i class="fa-solid fa-share-nodes"></i> Compartilhar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-movie">
+    <hr class="divider">
+
+    <section class="review-section">
+        <div class="section-label">Sua opinião</div>
+        <h2 class="section-heading">Deixe sua avaliação</h2>
+        <p class="section-sub">O que achou desta obra?</p>
+
+        <form class="rating-form" id="ratingForm" onsubmit="enviarAvaliacao(event)">
+            <input type="hidden" name="filme_id" value="1">
+
+            <div class="rating-input-container">
+                <label>Sua nota (clique nas estrelas):</label>
+                <div class="star-rating">
+                    <input type="radio" id="s10" name="nota" value="10"><label for="s10" title="10">★</label>
+                    <input type="radio" id="s9"  name="nota" value="9" ><label for="s9"  title="9">★</label>
+                    <input type="radio" id="s8"  name="nota" value="8" ><label for="s8"  title="8">★</label>
+                    <input type="radio" id="s7"  name="nota" value="7" ><label for="s7"  title="7">★</label>
+                    <input type="radio" id="s6"  name="nota" value="6" ><label for="s6"  title="6">★</label>
+                    <input type="radio" id="s5"  name="nota" value="5" ><label for="s5"  title="5">★</label>
+                    <input type="radio" id="s4"  name="nota" value="4" ><label for="s4"  title="4">★</label>
+                    <input type="radio" id="s3"  name="nota" value="3" ><label for="s3"  title="3">★</label>
+                    <input type="radio" id="s2"  name="nota" value="2" ><label for="s2"  title="2">★</label>
+                    <input type="radio" id="s1"  name="nota" value="1" ><label for="s1"  title="1">★</label>
+                </div>
+            </div>
+
+            <div class="comment-input-container">
+                <label for="comentario">Comentário (opcional):</label>
+                <textarea name="comentario" id="comentario" placeholder="Escreva aqui o que achou do filme..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">Publicar avaliação</button>
+        </form>
+    </section>
+
+    <section class="comments-list">
+        <div class="comments-header">
+            <h3>Comentários da comunidade</h3>
+            <span class="comments-count" id="totalComentarios">38 comentários</span>
+        </div>
+
+        <div id="listaComentarios">
+            <div class="comment-card">
+                <div class="comment-user">
+                    <div class="mini-avatar" style="background:linear-gradient(135deg,#6c5ce7,#4834d4)">MK</div>
+                    <div class="comment-user-info">
+                        <span class="comment-username">@matheus_k</span>
+                        <span class="comment-date">há 2 dias</span>
+                    </div>
+                    <div class="user-score">
+                        <div class="user-score-stars">
+                            <span class="sc">★</span><span class="sc">★</span><span class="sc">★</span><span class="sc">★</span><span class="sc">★</span>
+                        </div>
+                        10/10
+                    </div>
+                </div>
+                <p class="comment-text">Nolan superou todas as expectativas. Atuação incrível do Cillian Murphy.</p>
+                <div class="comment-footer">
+                    <button class="btn-like liked" onclick="toggleLike(this)"><i class="fa-solid fa-heart"></i> 47</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="toast-container"></div>
+
+    <script src="{{ url_for('static', path='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', path='js/comentarios.js') }}"></script>
+</body>
+</html>
