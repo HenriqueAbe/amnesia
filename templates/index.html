@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amnesia — Cinema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
+</head>
+<body>
+
+    {% include 'geral/menu.html' %}
+
+    <main>
+        <div class="content-header">
+            <h1>Explorar</h1>
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Pesquisar filme...">
+            </div>
+        </div>
+
+        <section class="movie-grid" id="movieGrid">
+            {% for filme in filmes %}
+            <div class="movie-card" onclick="window.location.href='/filmes/{{ filme.ID }}'">
+                <div class="rating-badge">{{ filme.Nota_Media or '0.0' }} / 5 ★</div>
+                
+                <img src="{{ filme.Capa_URL if filme.Capa_URL else 'https://via.placeholder.com/400x600' }}" alt="{{ filme.Titulo }}">
+                
+                <div class="card-overlay">
+                    <h3>{{ filme.Titulo }}</h3>
+                    <p>{{ filme.Diretor }} • {{ filme.Ano_Lancamento }}</p>
+                </div>
+            </div>
+            {% else %}
+            <p>Nenhum filme encontrado no catálogo.</p>
+            {% endfor %}
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', path='js/menu.js')}}"></script>
+    <script src="{{ url_for('static', path='js/app.js') }}"></script>
+</body>
+</html>
