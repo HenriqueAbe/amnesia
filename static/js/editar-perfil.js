@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmInput = document.getElementById('confirmInput');
     const btnDelete = document.getElementById('btnDelete');
     const PHRASE = 'excluir minha conta';
+if (btnDelete) {
+        btnDelete.disabled = true;
+    }
 
     if (openBtn) {
         openBtn.addEventListener('click', () => {
@@ -65,25 +68,33 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmBox.classList.remove('visible');
             confirmInput.value = '';
             btnDelete.classList.remove('active');
+            btnDelete.disabled = true; // Desativa novamente ao cancelar
             openBtn.disabled = false;
         });
     }
 
     if (confirmInput) {
         confirmInput.addEventListener('input', () => {
+            // Verifica se o texto digitado é exatamente igual à frase exigida
             const isMatch = confirmInput.value.trim().toLowerCase() === PHRASE;
             btnDelete.classList.toggle('active', isMatch);
+            btnDelete.disabled = !isMatch; // Ativa/desativa o botão de fato
         });
     }
 
     if (btnDelete) {
         btnDelete.addEventListener('click', () => {
+            // Proteção extra antes de enviar
+            if (confirmInput.value.trim().toLowerCase() !== PHRASE) {
+                return;
+            }
+
             fetch('/api/delete-account', { method: 'POST' })
             .then(res => {
                 if (res.ok) {
                     showMessage('Conta excluída com sucesso.', 'success');
                     setTimeout(() => {
-                        window.location.href = '/';
+                        window.location.href = '/logout'; // Chama a rota de logout para limpar a sessão
                     }, 1500);
                 } else {
                     showMessage('Erro ao excluir conta.', 'error');

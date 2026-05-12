@@ -70,3 +70,27 @@ if (movieForm) {
 
     });
 }
+
+const ratingForm = document.querySelector('.rating-form');
+
+if (ratingForm) {
+    ratingForm.addEventListener('submit', function(e) {
+
+        const notaSelecionada = this.querySelector('input[name="nota"]:checked');
+        const comentario = this.querySelector('textarea[name="comentario"]').value;
+
+        if (!notaSelecionada) {
+            e.preventDefault();
+            showMessage('Por favor, selecione uma nota antes de enviar!', 'error');
+            return;
+        }
+
+        if (comentario.trim().length < 5) {
+            e.preventDefault();
+            showMessage('Seu comentário precisa ter pelo menos 5 caracteres.', 'info');
+            return;
+        }
+
+        showMessage('Sua avaliação foi enviada e está em moderação!', 'success');
+    });
+}
