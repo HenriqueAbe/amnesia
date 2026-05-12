@@ -54,3 +54,19 @@ function toggleModal(id) {
         modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
     }
 }
+
+const movieForm = document.querySelector('.admin-form');
+
+if (movieForm) {
+    movieForm.addEventListener('submit', function(e) {
+        // Aqui você pode validar campos manualmente se quiser
+        const titulo = this.querySelector('input[name="titulo"]').value;
+
+        if (titulo.length < 2) {
+            e.preventDefault(); // Impede o envio
+            showMessage('O título é muito curto!', 'error');
+            return;
+        }
+
+    });
+}
