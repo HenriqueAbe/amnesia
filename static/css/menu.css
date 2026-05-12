@@ -13,9 +13,9 @@
         align-items: center;
     }
 
-    .logo-img { 
-        height: 80px; 
-        width: auto; 
+    .logo-img {
+        height: 80px;
+        width: auto;
     }
 
     .nav-item-menu {
@@ -27,7 +27,8 @@
         transition: 0.3s;
     }
 
-    .nav-item-menu:hover, .nav-item-menu.active {
+    .nav-item-menu:hover,
+    .nav-item-menu.active {
         background: #1c1c24;
         border-radius: 8px;
         color: #ffffff;
@@ -62,15 +63,51 @@
         transition: 0.2s;
     }
 
-    .config-btn { color: #666666; }
-    .config-btn:hover { color: #999999; transform: scale(1.1); }
+    .config-btn {
+        color: #666666;
+    }
 
-    .logout-btn { color: #8e8e93; }
-    .logout-btn:hover { color: #ff4d4d; transform: scale(1.1); }
+    .config-btn:hover {
+        color: #999999;
+        transform: scale(1.1);
+    }
+
+    .logout-btn {
+        color: #8e8e93;
+    }
+
+    .logout-btn:hover {
+        color: #ff4d4d;
+        transform: scale(1.1);
+    }
 
     /* --- LOGICA DO MENU MOBILE --- */
-    .menu-toggle, .menu-icon, .mobile-menu-title { 
-        display: none; 
+    .menu-toggle,
+    .menu-icon,
+    .mobile-menu-title {
+        display: none;
+    }
+
+    /* --- ESTILOS DO AVATAR NO MENU --- */
+    .avatar-menu {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        /* Mudado de 8px para 50% para ficar redondo */
+        object-fit: cover;
+        /* Impede que a foto fique espremida ou esticada */
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        display: block;
+        }
+
+    @media (max-width: 768px) {
+        .avatar-menu {
+            width: 35px;
+            height: 35px;
+            /* Garante que continue redondo no celular */
+            border-radius: 50%;
+            object-fit: cover;
+        }
     }
 
     @media (max-width: 768px) {
@@ -88,7 +125,9 @@
         }
 
         /* Nome do Usuário some no mobile para caber tudo */
-        .user-name-text { display: none; }
+        .user-name-text {
+            display: none;
+        }
 
         /* Nome "Amnesia" no topo do menu aberto */
         .mobile-menu-title {
@@ -97,7 +136,7 @@
             font-size: 22px;
             font-weight: 800;
             color: white;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 10px;
         }
 
@@ -105,7 +144,7 @@
         .nav-main-menu {
             position: fixed;
             top: 0;
-            left: -100%; 
+            left: -100%;
             width: 260px;
             height: 100vh;
             background-color: #0d0d12;
@@ -113,7 +152,7 @@
             flex-direction: column;
             transition: 0.4s;
             z-index: 1000;
-            box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+            box-shadow: 10px 0 20px rgba(0, 0, 0, 0.5);
         }
 
         .nav-item-menu {
@@ -122,14 +161,17 @@
         }
 
         /* Abrir menu ao clicar no label */
-        #menu-toggle:checked ~ .nav-main-menu {
+        #menu-toggle:checked~.nav-main-menu {
             left: 0;
         }
-        
+
         /* Troca o ícone para X quando aberto */
-        #menu-toggle:checked ~ .menu-icon i::before {
-            content: "\f00d"; 
+        #menu-toggle:checked~.menu-icon i::before {
+            content: "\f00d";
         }
 
-        .avatar-menu { width: 35px; height: 35px; }
+        .avatar-menu {
+            width: 35px;
+            height: 35px;
+        }
     }
