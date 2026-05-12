@@ -47,3 +47,10 @@ if (userInput) {
         });
     });
 }
+
+function toggleModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    }
+}

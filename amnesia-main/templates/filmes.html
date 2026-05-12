@@ -1,0 +1,66 @@
+@router.get("/filmes", response_class=HTMLResponse)
+async def admin_filmes(request: Request):
+    filmes_fake = [
+        {"titulo": "Interestelar", "genero": "Ficção Científica", "ano": 2014, "nota": 8.7, "poster_url": ""},
+        {"titulo": "O Poderoso Chefão", "genero": "Crime", "ano": 1972, "nota": 9.2, "poster_url": ""},
+        {"titulo": "Batman: O Cavaleiro das Trevas", "genero": "Ação", "ano": 2008, "nota": 9.0, "poster_url": ""},
+    ]
+    return templates.TemplateResponse("filmes.html", {"request": request, "filmes": filmes_fake})
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amnesia — Catálogo de Filmes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard.css') }}">
+</head>
+<body>
+
+    {% include 'geral/menu.html' %}
+
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div class="content-header">
+                <div>
+                    <h1>Catálogo de Filmes</h1>
+                    <p class="page-sub">Gerencie os títulos disponíveis no sistema</p>
+                </div>
+                <button class="btn-primary" onclick="location.href='/admin/filmes/novo'">
+                    <i class="fa-solid fa-plus"></i> Novo Filme
+                </button>
+            </div>
+
+            <div class="filter-section">
+                <input type="text" placeholder="Pesquisar filme..." id="userInput" class="search-input">
+            </div>
+
+            <div class="movies-grid">
+                {% for filme in filmes %}
+                <div class="movie-card">
+                    <div class="movie-poster">
+                        <img src="{{ filme.poster_url or 'https://via.placeholder.com/150x220' }}" alt="{{ filme.titulo }}">
+                        <div class="movie-overlay">
+                            <button class="btn-icon-white" title="Editar"><i class="fa-solid fa-edit"></i></button>
+                            <button class="btn-icon-white red-hover" onclick="remover(this)" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="movie-info">
+                        <h3>{{ filme.titulo }}</h3>
+                        <span class="movie-genre">{{ filme.genero }}</span>
+                        <div class="movie-meta">
+                            <span><i class="fa-solid fa-calendar"></i> {{ filme.ano }}</span>
+                            <span><i class="fa-solid fa-star text-yellow"></i> {{ filme.nota }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="{{ url_for('static', path='js/dashboard.js') }}"></script>
+</body>
+</html>
