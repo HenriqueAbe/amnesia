@@ -1,0 +1,71 @@
+@router.get("/usuarios", response_class=HTMLResponse)
+async def listar_usuarios(request: Request):
+    # Por enquanto, mandamos uma lista fake para testar o visual
+    usuarios_fake = [
+        {"id": 1, "nome": "Davi Amaral", "email": "davi@email.com", "status": "Ativo"},
+        {"id": 2, "nome": "Henrique Abe", "email": "henrique@email.com", "status": "Pendente"},
+    ]
+    return templates.TemplateResponse("usuarios.html", {
+        "request": request,
+        "usuarios": usuarios_fake
+    })
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amnesia — Gerenciar Usuários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard.css') }}">
+</head>
+<body>
+
+    {% include 'geral/menu.html' %} <div class="admin-layout">
+        <main class="admin-main">
+            <div class="content-header">
+                <h1>Gerenciar Usuários</h1>
+                <p class="page-sub">Visualize, edite ou remova membros da plataforma</p>
+            </div>
+
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span>Lista de Usuários</span>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Buscar por nome ou email..." id="userInput">
+                    </div>
+                </div>
+
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in usuarios %}
+                        <tr>
+                            <td>#{{ user.id }}</td>
+                            <td><strong>{{ user.nome }}</strong></td>
+                            <td>{{ user.email }}</td>
+                            <td><span class="pill {{ 'pill-ok' if user.status == 'Ativo' else 'pill-wait' }}">{{ user.status }}</span></td>
+                            <td class="actions">
+                                <button class="btn-icon blue" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="btn-icon red" onclick="remover(this)" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="{{ url_for('static', path='js/dashboard.js') }}"></script>
+</body>
+</html>

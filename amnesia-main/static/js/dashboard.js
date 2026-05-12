@@ -1,11 +1,3 @@
-function aprovar(btn) {
-    const tr = btn.closest('tr');
-    // Simulação de lógica que você pode integrar com seu backend depois
-    showMessage('Comentário aprovado com sucesso!', 'success');
-
-    tr.style.opacity = '0.5';
-    btn.parentElement.innerHTML = '<span class="pill pill-ok">Aprovado</span>';
-}
 
 function remover(btn) {
     if(confirm('Tem certeza que deseja remover este item?')) {
@@ -20,6 +12,8 @@ function remover(btn) {
 
 function showMessage(msg, type) {
     const container = document.getElementById('toast-container');
+    if (!container) return;
+
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.textContent = msg;
@@ -30,4 +24,26 @@ function showMessage(msg, type) {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 500);
     }, 3000);
+}
+
+function aprovar(btn) {
+    const tr = btn.closest('tr');
+    showMessage('Operação realizada com sucesso!', 'success');
+
+    tr.style.opacity = '0.5';
+    btn.parentElement.innerHTML = '<span class="pill pill-ok">Ativo</span>';
+}
+
+const userInput = document.getElementById('userInput');
+if (userInput) {
+    userInput.addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const trs = document.querySelectorAll('.admin-table tbody tr');
+
+        trs.forEach(tr => {
+            // Pega todo o texto da linha (nome, email, etc) para filtrar
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
 }
