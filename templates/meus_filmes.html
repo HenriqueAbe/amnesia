@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +7,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/meus_filmes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/filmes.css') }}">
 </head>
-
 <body>
 
-    {% include 'geral/menu.html' %}
+    <header class="main-header">
+       <a href="/" class="logo-text">amnesia<span>.</span></a>
+        <nav class="nav-main-menu">
+            <a href="/" class="nav-item-menu">Explorar</a>
+            <a href="/meus-filmes" class="nav-item-menu active">Meus Filmes</a>
+        </nav>
+        <div class="user-info-menu">
+            <div class="avatar-menu">DB</div>
+        </div>
+    </header>
 
     <main class="container-movie">
         <header class="content-header">
@@ -25,7 +32,7 @@
 
         <div class="filters-row">
             <button class="filter-chip active" onclick="filtrarStatus('todos', this)">
-                Todos <span class="count">2</span>
+                Todos <span class="count">3</span>
             </button>
             <button class="filter-chip" onclick="filtrarStatus('assistido', this)">
                 Assistidos
@@ -39,7 +46,7 @@
 
             <div class="fav-card" data-status="assistido">
                 <div class="fav-card-poster">
-                    <img src="" alt="Capa do Filme">
+                    <img src="https://via.placeholder.com/200x300" alt="Capa do Filme">
                     <span class="status-badge status-watched">Assistido</span>
                     <button class="remove-btn" onclick="removerFavorito(this)">
                         <i class="fa-solid fa-trash"></i>
@@ -55,7 +62,7 @@
 
             <div class="fav-card" data-status="quero">
                 <div class="fav-card-poster">
-                    <img src="" alt="Capa do Filme">
+                    <img src="https://via.placeholder.com/200x300" alt="Capa do Filme">
                     <span class="status-badge status-want">Quero Assistir</span>
                     <button class="remove-btn" onclick="removerFavorito(this)">
                         <i class="fa-solid fa-trash"></i>
@@ -69,7 +76,7 @@
                 </div>
             </div>
 
-            <a href="/" class="add-card">
+            <a href="/static" class="add-card">
                 <i class="fa-solid fa-plus"></i>
                 <span>Explorar novos filmes</span>
             </a>
@@ -81,12 +88,9 @@
         </div>
     </main>
 
-    <div id="toast-container"></div>
+   <div id="toast-container"></div>
 
-    <script src="{{ url_for('static', path='js/menu.js')}}"></script>
-    <script src="{{ url_for('static', path='js/meus_filmes.js') }}"></script>
     <script src="{{ url_for('static', path='js/utils.js') }}"></script>
     <script src="{{ url_for('static', path='js/comentarios.js') }}"></script>
 </body>
-
 </html>

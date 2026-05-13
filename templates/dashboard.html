@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +7,8 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
 
 </head>
-
 <body>
 
     {% include 'geral/menu.html' %}
@@ -26,52 +22,22 @@
 
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="metric-icon blue"><i class="fa-solid fa-film"></i></div>
-                    <div class="metric-label">Filmes no catálogo</div>
-                    <div class="metric-value">{{ total_filmes }}</div>
-                </div>
-
-                <div class="metric-card">
                     <div class="metric-icon purple"><i class="fa-solid fa-users"></i></div>
                     <div class="metric-label">Usuários cadastrados</div>
-                    <div class="metric-value">{{ total_usuarios }}</div>
+                    <div class="metric-value">{{ total_usuarios if total_usuarios else '0' }}</div>
                 </div>
-            </div>
+                </div>
 
             <div class="content-grid">
                 <div class="table-card">
                     <div class="table-card-header">
                         <span>Usuários recentes</span>
-                        <a href="#" class="btn-sm">Ver todos</a>
+                        <a href="{{ url_for('admin_usuarios') }}" class="btn-sm">Ver todos</a>
                     </div>
-
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>E-mail</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for u in usuarios_recentes %}
-                            <tr>
-                                <td>{{ u.ID }}</td>
-                                <td>{{ u.Nome_Usuario }}</td>
-                                <td>{{ u.Email }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                    </div>
             </div>
         </main>
     </div>
 
-    
-
-    <script src="{{ url_for('static', path='js/menu.js')}}"></script>
-    <script src="{{ url_for('static', path='js/dashboard.js') }}"></script>
-</body>
-
+    <script src="{{ url_for('static', path='js/dashboard.js') }}"></script></body>
 </html>
