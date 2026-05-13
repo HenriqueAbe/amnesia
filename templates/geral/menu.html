@@ -15,15 +15,15 @@
             <div class="mobile-menu-title">Amnesia</div>
 
             <a href="/" class="nav-item-menu">🎁 Explorar</a>
+<<<<<<< Updated upstream
+            <a href="/meus-filmes" class="nav-item-menu">🎬 Meus filmes</a>
+=======
             <a href="/meus_filmes" class="nav-item-menu">🎬 Meus filmes</a>
             
             {% if user.tipo == 'ADMIN' or user.Tipo == 'ADMIN' %}
             <a href="{{ url_for('dashboard') }}" class="nav-item-menu">📊 Painel Admin</a>
             {% endif %}
-            {# Só mostra o Painel Admin se o usuário tiver permissão #}
-            {% if user.is_admin %}
-            <a href="/admin/dashboard" class="nav-item-menu">📊 Painel Admin</a>
-            {% endif %}
+>>>>>>> Stashed changes
         </nav>
 
         <div class="user-info-menu">
