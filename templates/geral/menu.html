@@ -15,7 +15,15 @@
             <div class="mobile-menu-title">Amnesia</div>
 
             <a href="/" class="nav-item-menu">🎁 Explorar</a>
+<<<<<<< Updated upstream
             <a href="/meus-filmes" class="nav-item-menu">🎬 Meus filmes</a>
+=======
+            <a href="/meus_filmes" class="nav-item-menu">🎬 Meus filmes</a>
+            
+            {% if user.tipo == 'ADMIN' or user.Tipo == 'ADMIN' %}
+            <a href="{{ url_for('dashboard') }}" class="nav-item-menu">📊 Painel Admin</a>
+            {% endif %}
+>>>>>>> Stashed changes
         </nav>
 
         <div class="user-info-menu">
@@ -30,12 +38,9 @@
                 </strong></span>
 
             <div class="avatar-container-menu">
-                <!-- Verifica se existe usuário logado e pega a imagem pela rota que você criou -->
                 {% if user %}
-                <!-- Tenta pegar user.id ou user.ID, dependendo de como o backend envia -->
                 <img src="/avatar/{{ user.id or user.ID }}" id="menuAvatar" class="avatar-menu" alt="Perfil">
                 {% else %}
-                <!-- Fallback para visitante -->
                 <img src="../static/imagens/Usuario.png" id="menuAvatar" class="avatar-menu" alt="Visitante">
                 {% endif %}
             </div>
