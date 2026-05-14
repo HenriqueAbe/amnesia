@@ -14,7 +14,7 @@ DB_CONFIG = {
 # JWT
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 500
+ACCESS_TOKEN_EXPIRE_MINUTES = 10
 
 # Função para obter conexão com MySQL
 def get_db():
