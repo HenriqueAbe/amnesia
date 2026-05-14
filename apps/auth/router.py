@@ -45,12 +45,12 @@ async def cadastro(
 
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
-            cursor.execute("SELECT ID FROM USUARIO WHERE Email = %s", (email,))
+            cursor.execute("SELECT ID FROM Usuario WHERE Email = %s", (email,))
             if cursor.fetchone():
                 return salvar_e_redirecionar("Este e-mail já está cadastrado.")
 
             cursor.execute(
-                "INSERT INTO USUARIO (Nome_Usuario, Email, Senha, Tipo) VALUES (%s, %s, %s, 'USER')",
+                "INSERT INTO Usuario (Nome_Usuario, Email, Senha, Tipo) VALUES (%s, %s, %s, 'USER')",
                 (nome_usuario, email, hash_password(senha)),
             )
             db.commit()
@@ -75,7 +75,7 @@ async def login(
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute(
-                "SELECT ID, Nome_Usuario, Email, Senha, Tipo FROM USUARIO WHERE Email = %s",
+                "SELECT ID, Nome_Usuario, Email, Senha, Tipo FROM Usuario WHERE Email = %s",
                 (email,),
             )
             user = cursor.fetchone()

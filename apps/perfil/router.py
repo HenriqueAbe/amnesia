@@ -21,7 +21,7 @@ async def editar_perfil(request: Request, db=Depends(get_db)):
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute(
-                "SELECT ID, Nome_Usuario, Email, Tipo, Foto_Usuario FROM USUARIO WHERE ID = %s",
+                "SELECT ID, Nome_Usuario, Email, Tipo, Foto_Usuario FROM Usuario WHERE ID = %s",
                 (user_session["id"],),
             )
             user_data = cursor.fetchone()
@@ -52,7 +52,7 @@ async def update_profile(
     try:
         with db.cursor() as cursor:
             cursor.execute(
-                "UPDATE USUARIO SET Nome_Usuario = %s WHERE ID = %s",
+                "UPDATE Usuario SET Nome_Usuario = %s WHERE ID = %s",
                 (data.get("nome_usuario"), user["id"]),
             )
             db.commit()
@@ -85,14 +85,14 @@ async def change_password(
 
     try:
         with db.cursor(pymysql.cursors.DictCursor) as cursor:
-            cursor.execute("SELECT Senha FROM USUARIO WHERE ID = %s", (user["id"],))
+            cursor.execute("SELECT Senha FROM Usuario WHERE ID = %s", (user["id"],))
             result = cursor.fetchone()
 
             if not result or not verify_password(data.get("current_password"), result["Senha"]):
                 return JSONResponse(status_code=400, content={"message": "Senha atual incorreta"})
 
             cursor.execute(
-                "UPDATE USUARIO SET Senha = %s WHERE ID = %s",
+                "UPDATE Usuario SET Senha = %s WHERE ID = %s",
                 (hash_password(data.get("new_password")), user["id"]),
             )
             db.commit()
@@ -114,7 +114,7 @@ async def delete_account(request: Request, db=Depends(get_db)):
 
     try:
         with db.cursor() as cursor:
-            cursor.execute("DELETE FROM USUARIO WHERE ID = %s", (user["id"],))
+            cursor.execute("DELETE FROM Usuario WHERE ID = %s", (user["id"],))
             db.commit()
 
         request.session.clear()
@@ -142,7 +142,7 @@ async def upload_avatar(
 
         with db.cursor() as cursor:
             cursor.execute(
-                "UPDATE USUARIO SET Foto_Usuario = %s WHERE ID = %s",
+                "UPDATE Usuario SET Foto_Usuario = %s WHERE ID = %s",
                 (imagem_bytes, user_session["id"]),
             )
             db.commit()
@@ -160,7 +160,7 @@ async def upload_avatar(
 @router.get("/avatar/{user_id}")
 async def get_avatar(user_id: int, db=Depends(get_db)):
     with db.cursor() as cursor:
-        cursor.execute("SELECT Foto_Usuario FROM USUARIO WHERE ID = %s", (user_id,))
+        cursor.execute("SELECT Foto_Usuario FROM Usuario WHERE ID = %s", (user_id,))
         result = cursor.fetchone()
         if result and result[0]:
             return Response(content=result[0], media_type="image/jpeg")

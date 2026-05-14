@@ -6,15 +6,15 @@ load_dotenv()
 
 # Configuração do banco de dados
 DB_CONFIG = {
-    "host":     os.getenv("HOST"),
-    "user":     os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DATABASE"),
+    "host":     os.getenv("HOST","localhost"),
+    "user":     os.getenv("DB_USER", "root"),
+    "password": os.getenv("DB_PASSWORD", "Henrique3103//"),
+    "database": os.getenv("DATABASE", "amnesia"),
 }
 # JWT
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
+ACCESS_TOKEN_EXPIRE_MINUTES = 10
 
 # Função para obter conexão com MySQL
 def get_db():

@@ -1,4 +1,3 @@
-
 function filtrarStatus(status, btn) {
     document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -28,7 +27,6 @@ function removerFavorito(btn) {
     const titulo = card.querySelector('.fav-card-title').textContent;
 
     if (confirm(`Remover "${titulo}" da sua biblioteca?`)) {
-        // Animação de saída
         card.style.transition = 'all 0.3s ease';
         card.style.opacity = '0';
         card.style.transform = 'scale(0.9)';
