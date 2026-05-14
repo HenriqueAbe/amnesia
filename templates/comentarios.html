@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {% include 'geral/menu.html' %}
 
 <!DOCTYPE html>
@@ -121,3 +122,254 @@
     <script src="{{ url_for('static', path='js/comentarios.js') }}"></script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comentários — Amnesia</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/comentarios.css') }}">
+
+</head>
+
+<body>
+
+    {% include 'geral/menu.html' %}
+
+    <main class="comentarios-container">
+        
+        <!-- Seção principal do filme -->
+        <div class="filme-detalhes">
+            
+            <!-- Coluna esquerda: Poster do filme -->
+            <div class="filme-poster-section">
+                <img src="https://via.placeholder.com/250x370" alt="Poster do Filme" class="filme-poster">
+                
+                <!-- Botões de ação acima do poster -->
+                <div class="filme-acoes">
+                    <button class="btn-acao assistido" title="Marcar como assistido">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Assistido</span>
+                    </button>
+                    <button class="btn-acao quero-assistir" title="Adicionar à lista de espera">
+                        <i class="fa-solid fa-bookmark"></i>
+                        <span>Quero assistir</span>
+                    </button>
+                    <button class="btn-acao favoritar" title="Adicionar aos favoritos">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>Favoritar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Coluna direita: Informações do filme -->
+            <div class="filme-info-section">
+                
+                <div class="filme-header">
+                    <h1 class="filme-titulo">Oppenheimer</h1>
+                    <div class="filme-meta">
+                        <span class="filme-ano">2023</span>
+                        <span class="filme-duracao">180 min</span>
+                        <span class="filme-genero">Drama, Histórico</span>
+                    </div>
+                </div>
+
+                <!-- Avaliação em estrelas -->
+                <div class="filme-avaliacao-section">
+                    <div class="avaliacao-display">
+                        <div class="stars-display">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                        </div>
+                        <span class="avaliacao-valor">4.5/5 (1.234 avaliações)</span>
+                    </div>
+
+                    <div class="sua-avaliacao">
+                        <p class="sua-avaliacao-label">Sua avaliação:</p>
+                        <div class="stars-input">
+                            <i class="fa-regular fa-star" data-value="1"></i>
+                            <i class="fa-regular fa-star" data-value="2"></i>
+                            <i class="fa-regular fa-star" data-value="3"></i>
+                            <i class="fa-regular fa-star" data-value="4"></i>
+                            <i class="fa-regular fa-star" data-value="5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descrição -->
+                <div class="filme-descricao-section">
+                    <h3>Sinopse</h3>
+                    <p class="filme-descricao">
+                        Conta a história do físico teórico J. Robert Oppenheimer, que desenvolveu a primeira bomba atômica durante a Segunda Guerra Mundial. O filme acompanha sua vida pessoal e profissional enquanto lida com as consequências morais e políticas de suas descobertas.
+                    </p>
+                </div>
+
+                <!-- Elenco -->
+                <div class="filme-elenco-section">
+                    <h3>Elenco</h3>
+                    <div class="elenco-lista">
+                        <div class="elenco-item">
+                            <img src="https://via.placeholder.com/60x60" alt="Ator" class="elenco-foto">
+                            <div class="elenco-info">
+                                <p class="elenco-ator">Cillian Murphy</p>
+                                <p class="elenco-personagem">J. Robert Oppenheimer</p>
+                            </div>
+                        </div>
+
+                        <div class="elenco-item">
+                            <img src="https://via.placeholder.com/60x60" alt="Ator" class="elenco-foto">
+                            <div class="elenco-info">
+                                <p class="elenco-ator">Robert Downey Jr.</p>
+                                <p class="elenco-personagem">Lewis Strauss</p>
+                            </div>
+                        </div>
+
+                        <div class="elenco-item">
+                            <img src="https://via.placeholder.com/60x60" alt="Ator" class="elenco-foto">
+                            <div class="elenco-info">
+                                <p class="elenco-ator">Emily Blunt</p>
+                                <p class="elenco-personagem">Kitty Oppenheimer</p>
+                            </div>
+                        </div>
+
+                        <div class="elenco-item">
+                            <img src="https://via.placeholder.com/60x60" alt="Ator" class="elenco-foto">
+                            <div class="elenco-info">
+                                <p class="elenco-ator">Matt Damon</p>
+                                <p class="elenco-personagem">General Leslie Groves</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Seção de Comentários -->
+        <div class="comentarios-section">
+            
+            <div class="comentarios-header">
+                <h2>Comentários</h2>
+                <span class="comentarios-count">234 comentários</span>
+            </div>
+
+            <!-- Novo comentário (usuário logado) -->
+            <div class="novo-comentario">
+                <div class="novo-comentario-header">
+                    <img src="https://via.placeholder.com/40x40" alt="Seu Avatar" class="avatar-novo">
+                    <p class="nome-usuario-novo">Você</p>
+                </div>
+
+                <textarea class="novo-comentario-input" placeholder="Compartilhe seu pensamento sobre este filme..."></textarea>
+
+                <div class="novo-comentario-footer">
+                    <button class="btn-enviar">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar comentário
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lista de comentários -->
+            <div class="comentarios-lista">
+                
+                <!-- Comentário 1 -->
+                <div class="comentario-item">
+                    <div class="comentario-header">
+                        <img src="https://via.placeholder.com/40x40" alt="Avatar" class="comentario-avatar">
+                        <div class="comentario-user-info">
+                            <p class="comentario-autor">@matheus_k</p>
+                            <p class="comentario-data">há 2 horas</p>
+                        </div>
+                    </div>
+
+                    <p class="comentario-texto">
+                        Filme incrivelmente bom! Cillian Murphy foi impecável na interpretação. Uma obra de arte cinematográfica. Recomendo demais!
+                    </p>
+
+                    <div class="comentario-footer">
+                        <button class="btn-comentario-acao">
+                            <i class="fa-solid fa-heart"></i> 234
+                        </button>
+                        <button class="btn-comentario-acao">
+                            <i class="fa-solid fa-reply"></i> Responder
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Comentário 2 -->
+                <div class="comentario-item">
+                    <div class="comentario-header">
+                        <img src="https://via.placeholder.com/40x40" alt="Avatar" class="comentario-avatar">
+                        <div class="comentario-user-info">
+                            <p class="comentario-autor">@carol_vg</p>
+                            <p class="comentario-data">há 5 horas</p>
+                        </div>
+                    </div>
+
+                    <p class="comentario-texto">
+                        Muito interessante a perspectiva histórica, mas achei um pouco longo demais. Algumas cenas poderiam ser editadas.
+                    </p>
+
+                    <div class="comentario-footer">
+                        <button class="btn-comentario-acao">
+                            <i class="fa-solid fa-heart"></i> 89
+                        </button>
+                        <button class="btn-comentario-acao">
+                            <i class="fa-solid fa-reply"></i> Responder
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Comentário 3 -->
+                <div class="comentario-item">
+                    <div class="comentario-header">
+                        <img src="https://via.placeholder.com/40x40" alt="Avatar" class="comentario-avatar">
+                        <div class="comentario-user-info">
+                            <p class="comentario-autor">@joao_rs</p>
+                            <p class="comentario-data">há 1 dia</p>
+                        </div>
+                    </div>
+
+                    <p class="comentario-texto">
+                        A trilha sonora de Hans Zimmer é simplesmente fantástica. Cada cena fica ainda melhor com a música. Oscar merecido!
+                    </p>
+
+                    <div class="comentario-footer">
+                        <button class="btn-comentario-acao">
+                            <i class="fa-solid fa-heart"></i> 567
+                        </button>
+                        <button class="btn-comentario-acao">
+                            <i class="fa-solid fa-reply"></i> Responder
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Botão Carregar Mais -->
+            <div class="comentarios-carregar-mais">
+                <button class="btn-carregar-mais">
+                    Carregar mais comentários
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="{{ url_for('static', path='js/comentarios.js') }}"></script>
+
+</body>
+
+</html>
+>>>>>>> Stashed changes
