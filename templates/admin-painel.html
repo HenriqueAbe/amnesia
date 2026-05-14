@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin — Amnesia</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin-sidebar.css') }}">
+
+</head>
+
+<body>
+
+    {% include 'geral/menu.html' %}
+
+    <div class="admin-container">
+        
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <i class="fa-solid fa-cog"></i>
+                    <span>Admin</span>
+                </div>
+                <button class="btn-toggle-sidebar" id="btnToggleSidebar">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="sidebar-item active" data-page="dashboard">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </button>
+
+                <button class="sidebar-item" data-page="filmes">
+                    <i class="fa-solid fa-film"></i>
+                    <span>Gerenciar Filmes</span>
+                </button>
+
+                <button class="sidebar-item" data-page="usuarios">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Usuários</span>
+                </button>
+
+                <button class="sidebar-item" data-page="avaliacoes">
+                    <i class="fa-solid fa-star"></i>
+                    <span>Avaliações</span>
+                </button>
+
+                <button class="sidebar-item" data-page="comentarios-moderacao">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Comentários</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-sair">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="admin-main-content">
+
+            <!-- PÁGINA: DASHBOARD -->
+            <div class="admin-page" id="page-dashboard" style="display: block;">
+                <div class="content-header">
+                    <h1>Dashboard</h1>
+                    <p class="page-sub">Visão geral do sistema — última atualização agora</p>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon blue"><i class="fa-solid fa-users"></i></div>
+                        <div class="metric-label">Usuários cadastrados</div>
+                        <div class="metric-value">1.284</div>
+                        <div class="metric-change positive">+ 38 esta semana</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon purple"><i class="fa-solid fa-film"></i></div>
+                        <div class="metric-label">Filmes no catálogo</div>
+                        <div class="metric-value">342</div>
+                        <div class="metric-change positive">+ 5 este mês</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon green"><i class="fa-solid fa-star"></i></div>
+                        <div class="metric-label">Avaliações</div>
+                        <div class="metric-value">9.761</div>
+                        <div class="metric-change positive">+ 212 hoje</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon yellow"><i class="fa-solid fa-comments"></i></div>
+                        <div class="metric-label">Comentários</div>
+                        <div class="metric-value">4.530</div>
+                        <div class="metric-change negative">12 pendentes</div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <span>Usuários recentes</span>
+                            <a href="#" class="btn-sm">Ver todos</a>
+                        </div>
+
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Usuário</th>
+                                    <th>Email</th>
+                                    <th>Data</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>João Silva</td>
+                                    <td>joao@email.com</td>
+                                    <td>Hoje às 14:30</td>
+                                    <td><span class="status-badge ativo">Ativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Santos</td>
+                                    <td>maria@email.com</td>
+                                    <td>Hoje às 10:15</td>
+                                    <td><span class="status-badge ativo">Ativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Pedro Costa</td>
+                                    <td>pedro@email.com</td>
+                                    <td>Ontem às 18:45</td>
+                                    <td><span class="status-badge inativo">Inativo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <span>Comentários aguardando moderação</span>
+                            <a href="#" class="btn-sm">Ver todos</a>
+                        </div>
+
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Usuário</th>
+                                    <th>Filme</th>
+                                    <th>Comentário</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>@matheus_k</td>
+                                    <td>Oppenheimer</td>
+                                    <td>Filme incrível!</td>
+                                    <td>
+                                        <button class="btn-table-acao btn-aprovar"><i class="fa-solid fa-check"></i></button>
+                                        <button class="btn-table-acao btn-rejeitar"><i class="fa-solid fa-xmark"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>@carol_vg</td>
+                                    <td>Duna</td>
+                                    <td>Achei muito longo</td>
+                                    <td>
+                                        <button class="btn-table-acao btn-aprovar"><i class="fa-solid fa-check"></i></button>
+                                        <button class="btn-table-acao btn-rejeitar"><i class="fa-solid fa-xmark"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PÁGINA: GERENCIAR FILMES -->
+            <div class="admin-page" id="page-filmes" style="display: none;">
+                <div class="content-header">
+                    <h1>Gerenciar Filmes</h1>
+                    <p class="page-sub">Adicione, edite e remova filmes do catálogo</p>
+                </div>
+
+                <div class="filmes-toolbar">
+                    <button class="btn-adicionar-filme" id="btnAdicionarFilme">
+                        <i class="fa-solid fa-plus"></i>
+                        Adicionar novo filme
+                    </button>
+                    <div class="toolbar-search">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" placeholder="Pesquisar filmes..." class="search-filmes">
+                    </div>
+                </div>
+
+                <div class="filmes-table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Gênero</th>
+                                <th>Ano</th>
+                                <th>Diretor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-titulo">
+                                    <div class="filme-row">
+                                        <img src="https://via.placeholder.com/40x60" alt="Oppenheimer" class="filme-thumbnail">
+                                        <span>Oppenheimer</span>
+                                    </div>
+                                </td>
+                                <td>Drama, Histórico</td>
+                                <td>2023</td>
+                                <td>Christopher Nolan</td>
+                                <td><span class="status-badge ativo">Ativo</span></td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-editar" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-titulo">
+                                    <div class="filme-row">
+                                        <img src="https://via.placeholder.com/40x60" alt="Duna" class="filme-thumbnail">
+                                        <span>Duna: Parte Dois</span>
+                                    </div>
+                                </td>
+                                <td>Ficção Científica</td>
+                                <td>2024</td>
+                                <td>Denis Villeneuve</td>
+                                <td><span class="status-badge ativo">Ativo</span></td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-editar" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="col-titulo">
+                                    <div class="filme-row">
+                                        <img src="https://via.placeholder.com/40x60" alt="Barbie" class="filme-thumbnail">
+                                        <span>Barbie</span>
+                                    </div>
+                                </td>
+                                <td>Comédia, Fantasia</td>
+                                <td>2023</td>
+                                <td>Greta Gerwig</td>
+                                <td><span class="status-badge inativo">Inativo</span></td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-editar" title="Editar">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PÁGINA: USUÁRIOS -->
+            <div class="admin-page" id="page-usuarios" style="display: none;">
+                <div class="content-header">
+                    <h1>Gerenciar Usuários</h1>
+                    <p class="page-sub">Visualize e gerencie os usuários cadastrados</p>
+                </div>
+
+                <div class="filmes-toolbar">
+                    <div class="toolbar-search">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" placeholder="Pesquisar usuários...">
+                    </div>
+                </div>
+
+                <div class="filmes-table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Data de Cadastro</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>João Silva</td>
+                                <td>joao@email.com</td>
+                                <td>15/02/2024</td>
+                                <td><span class="status-badge ativo">Ativo</span></td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-ver" title="Ver">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Maria Santos</td>
+                                <td>maria@email.com</td>
+                                <td>20/01/2024</td>
+                                <td><span class="status-badge ativo">Ativo</span></td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-ver" title="Ver">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Pedro Costa</td>
+                                <td>pedro@email.com</td>
+                                <td>10/03/2024</td>
+                                <td><span class="status-badge inativo">Inativo</span></td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-ver" title="Ver">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PÁGINA: AVALIAÇÕES -->
+            <div class="admin-page" id="page-avaliacoes" style="display: none;">
+                <div class="content-header">
+                    <h1>Avaliações</h1>
+                    <p class="page-sub">Visualize e gerencie as avaliações de filmes</p>
+                </div>
+
+                <div class="filmes-toolbar">
+                    <div class="toolbar-search">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" placeholder="Pesquisar avaliações...">
+                    </div>
+                </div>
+
+                <div class="filmes-table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Filme</th>
+                                <th>Usuário</th>
+                                <th>Nota</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Oppenheimer</td>
+                                <td>@matheus_k</td>
+                                <td>
+                                    <div class="stars-display">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </td>
+                                <td>05/05/2026</td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Duna: Parte Dois</td>
+                                <td>@carol_vg</td>
+                                <td>
+                                    <div class="stars-display">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </td>
+                                <td>04/05/2026</td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-deletar" title="Deletar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PÁGINA: COMENTÁRIOS (MODERAÇÃO) -->
+            <div class="admin-page" id="page-comentarios-moderacao" style="display: none;">
+                <div class="content-header">
+                    <h1>Moderação de Comentários</h1>
+                    <p class="page-sub">Aprove ou rejeite comentários pendentes</p>
+                </div>
+
+                <div class="filmes-toolbar">
+                    <div class="toolbar-search">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" placeholder="Pesquisar comentários...">
+                    </div>
+                </div>
+
+                <div class="filmes-table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Filme</th>
+                                <th>Comentário</th>
+                                <th>Status</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@matheus_k</td>
+                                <td>Oppenheimer</td>
+                                <td>Filme incrivelmente bom! Cillian Murphy foi impecável...</td>
+                                <td><span class="status-badge pendente">Pendente</span></td>
+                                <td>05/05/2026</td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-aprovar" title="Aprovar">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-rejeitar" title="Rejeitar">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>@carol_vg</td>
+                                <td>Duna: Parte Dois</td>
+                                <td>Muito interessante a perspectiva visual...</td>
+                                <td><span class="status-badge pendente">Pendente</span></td>
+                                <td>04/05/2026</td>
+                                <td class="col-acoes">
+                                    <button class="btn-table-acao btn-aprovar" title="Aprovar">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <button class="btn-table-acao btn-rejeitar" title="Rejeitar">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Modal para adicionar/editar filme -->
+    <div class="modal-overlay" id="modalFilme" style="display: none;">
+        <div class="modal-conteudo">
+
+            <div class="modal-header">
+                <h2 id="modalTitulo">Adicionar novo filme</h2>
+                <button class="btn-fechar-modal" id="btnFecharModal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form class="modal-form" id="formFilme">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="titulo">Título do filme *</label>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ex: Oppenheimer" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ano">Ano de lançamento *</label>
+                        <input type="number" id="ano" name="ano" placeholder="2023" min="1900" max="2099" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="genero">Gênero *</label>
+                        <select id="genero" name="genero" required>
+                            <option value="">Selecione um gênero</option>
+                            <option value="acao">Ação</option>
+                            <option value="aventura">Aventura</option>
+                            <option value="comédia">Comédia</option>
+                            <option value="drama">Drama</option>
+                            <option value="ficção-científica">Ficção Científica</option>
+                            <option value="fantasia">Fantasia</option>
+                            <option value="histórico">Histórico</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="diretor">Diretor *</label>
+                        <input type="text" id="diretor" name="diretor" placeholder="Ex: Christopher Nolan" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duracao">Duração (minutos) *</label>
+                        <input type="number" id="duracao" name="duracao" placeholder="180" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avaliacao">Avaliação (0-10) *</label>
+                        <input type="number" id="avaliacao" name="avaliacao" placeholder="8.5" min="0" max="10" step="0.1" required>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="descricao">Sinopse *</label>
+                    <textarea id="descricao" name="descricao" placeholder="Descrição completa do filme..." rows="5" required></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancelar" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn-salvar">
+                        <i class="fa-solid fa-check"></i> Salvar filme
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='js/admin-sidebar.js') }}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Filmes — Admin</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/menu.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/admin-filmes.css') }}">
+
+</head>
+
+<body>
+
+    {% include 'geral/menu.html' %}
+
+    <div class="admin-layout">
+        <main class="admin-main">
+
+            <div class="content-header">
+                <h1>Gerenciar Filmes</h1>
+                <p class="page-sub">Adicione, edite e remova filmes do catálogo</p>
+            </div>
+
+            <!-- Botão flutuante para adicionar filme -->
+            <div class="filmes-toolbar">
+                <button class="btn-adicionar-filme" id="btnAdicionarFilme">
+                    <i class="fa-solid fa-plus"></i>
+                    Adicionar novo filme
+                </button>
+                <div class="toolbar-search">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Pesquisar filmes..." class="search-filmes">
+                </div>
+            </div>
+
+            <!-- Tabela de filmes -->
+            <div class="filmes-table-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Gênero</th>
+                            <th>Ano</th>
+                            <th>Diretor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-titulo">
+                                <div class="filme-row">
+                                    <img src="https://via.placeholder.com/40x60" alt="Oppenheimer" class="filme-thumbnail">
+                                    <span>Oppenheimer</span>
+                                </div>
+                            </td>
+                            <td>Drama, Histórico</td>
+                            <td>2023</td>
+                            <td>Christopher Nolan</td>
+                            <td><span class="status-badge ativo">Ativo</span></td>
+                            <td class="col-acoes">
+                                <button class="btn-table-acao btn-editar" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-table-acao btn-deletar" title="Deletar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-titulo">
+                                <div class="filme-row">
+                                    <img src="https://via.placeholder.com/40x60" alt="Duna" class="filme-thumbnail">
+                                    <span>Duna: Parte Dois</span>
+                                </div>
+                            </td>
+                            <td>Ficção Científica</td>
+                            <td>2024</td>
+                            <td>Denis Villeneuve</td>
+                            <td><span class="status-badge ativo">Ativo</span></td>
+                            <td class="col-acoes">
+                                <button class="btn-table-acao btn-editar" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-table-acao btn-deletar" title="Deletar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-titulo">
+                                <div class="filme-row">
+                                    <img src="https://via.placeholder.com/40x60" alt="Barbie" class="filme-thumbnail">
+                                    <span>Barbie</span>
+                                </div>
+                            </td>
+                            <td>Comédia, Fantasia</td>
+                            <td>2023</td>
+                            <td>Greta Gerwig</td>
+                            <td><span class="status-badge inativo">Inativo</span></td>
+                            <td class="col-acoes">
+                                <button class="btn-table-acao btn-editar" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-table-acao btn-deletar" title="Deletar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-titulo">
+                                <div class="filme-row">
+                                    <img src="https://via.placeholder.com/40x60" alt="Killers of the Flower Moon" class="filme-thumbnail">
+                                    <span>Killers of the Flower Moon</span>
+                                </div>
+                            </td>
+                            <td>Drama, Histórico</td>
+                            <td>2023</td>
+                            <td>Martin Scorsese</td>
+                            <td><span class="status-badge ativo">Ativo</span></td>
+                            <td class="col-acoes">
+                                <button class="btn-table-acao btn-editar" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button class="btn-table-acao btn-deletar" title="Deletar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal para adicionar/editar filme -->
+    <div class="modal-overlay" id="modalFilme" style="display: none;">
+        <div class="modal-conteudo">
+
+            <div class="modal-header">
+                <h2 id="modalTitulo">Adicionar novo filme</h2>
+                <button class="btn-fechar-modal" id="btnFecharModal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form class="modal-form" id="formFilme">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="titulo">Título do filme *</label>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ex: Oppenheimer" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ano">Ano de lançamento *</label>
+                        <input type="number" id="ano" name="ano" placeholder="2023" min="1900" max="2099" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="genero">Gênero *</label>
+                        <select id="genero" name="genero" required>
+                            <option value="">Selecione um gênero</option>
+                            <option value="acao">Ação</option>
+                            <option value="aventura">Aventura</option>
+                            <option value="comédia">Comédia</option>
+                            <option value="drama">Drama</option>
+                            <option value="ficção-científica">Ficção Científica</option>
+                            <option value="fantasia">Fantasia</option>
+                            <option value="histórico">Histórico</option>
+                            <option value="horror">Horror</option>
+                            <option value="romance">Romance</option>
+                            <option value="suspense">Suspense</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="diretor">Diretor *</label>
+                        <input type="text" id="diretor" name="diretor" placeholder="Ex: Christopher Nolan" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="duracao">Duração (minutos) *</label>
+                        <input type="number" id="duracao" name="duracao" placeholder="180" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avaliacao">Avaliação (0-10) *</label>
+                        <input type="number" id="avaliacao" name="avaliacao" placeholder="8.5" min="0" max="10" step="0.1" required>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="descricao">Sinopse *</label>
+                    <textarea id="descricao" name="descricao" placeholder="Descrição completa do filme..." rows="5" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="poster">URL do Poster</label>
+                        <input type="url" id="poster" name="poster" placeholder="https://exemplo.com/poster.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="ativo">Ativo</option>
+                            <option value="inativo">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="elenco">Elenco (nomes separados por vírgula)</label>
+                    <input type="text" id="elenco" name="elenco" placeholder="Ex: Ator 1, Ator 2, Ator 3">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancelar" id="btnCancelar">Cancelar</button>
+                    <button type="submit" class="btn-salvar">
+                        <i class="fa-solid fa-check"></i> Salvar filme
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div class="modal-overlay modal-confirmacao" id="modalConfirmacao" style="display: none;">
+        <div class="modal-confirmacao-conteudo">
+            <div class="confirmacao-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3>Deletar filme</h3>
+            <p>Tem certeza que deseja deletar este filme? Esta ação não pode ser desfeita.</p>
+            <div class="confirmacao-actions">
+                <button class="btn-cancelar-confirmacao" id="btnCancelarConfirmacao">Cancelar</button>
+                <button class="btn-deletar-confirmacao" id="btnConfirmarDelecao">Deletar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='js/admin-filmes.js') }}"></script>
+
+</body>
+
+</html>
