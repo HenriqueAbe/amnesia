@@ -16,8 +16,9 @@
             <a href="/meus_filmes" class="nav-item-menu">🎬 Meus filmes</a>
             
             {% if user.tipo == 'ADMIN' or user.Tipo == 'ADMIN' %}
-            <a href="{{ url_for('dashboard') }}" class="nav-item-menu">📊 Painel Admin</a>
+            <a href="/dashboard" class="nav-item-menu">📊 Painel Admin</a>
             {% endif %}
+
         </nav>
 
         <div class="user-info-menu">
